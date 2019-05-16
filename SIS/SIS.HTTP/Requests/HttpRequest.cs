@@ -26,7 +26,7 @@
         public string Url { get; private set; }
         public Dictionary<string, object> FromData { get; }
         public Dictionary<string, object> QueryData { get; }
-        public IHttpHeaderCollection Headers { get; private set; }
+        public IHttpHeaderCollection Headers { get; }
         public HttpRequestMethod RequestMethod { get; private set; }
 
         private void ParseRequest(string requestString)
@@ -49,11 +49,17 @@
 
         private void ParseRequestQueryParameters()
         {
-            var queryPrams = (this.Url.Split(new[] { '?', '#' }).Skip(1).Take(1).ToString()).Split('&');
+            var queryString = this.Url.Split(new[] { '?', '#' }).Skip(1).Take(1).ToString();
+            var queryParams = queryString.Split('&');
 
-            for (int i = 0; i < queryPrams.Length; i++)
+            if (!IsValidRequestQueryString(queryString, queryParams))
             {
-                var data = queryPrams[i].Split('=');
+                throw new BadRequestException();
+            }
+
+            for (int i = 0; i < queryParams.Length; i++)
+            {
+                var data = queryParams[i].Split('=');
                 var key = data[0];
                 var val = data[1];
 
@@ -127,7 +133,7 @@
 
         private bool IsValidRequestQueryString(string queryString, string[] queryParameters)
         {
-            throw new NotImplementedException();
+            return !string.IsNullOrEmpty(queryString) && queryParameters.Length >= 1;
         }
     }
 }
