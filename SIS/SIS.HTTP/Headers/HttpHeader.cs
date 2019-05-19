@@ -4,10 +4,13 @@
 
     public class HttpHeader
     {
+        public const string Location = "Location";
+        public const string ContentTypeKey = "Content-Type";
+
         public HttpHeader(string key, string value)
         {
-            CoreValidator.ThrowIfNullOrEmpty(key,nameof(key));
-            CoreValidator.ThrowIfNullOrEmpty(value,nameof(value));
+            CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
+            CoreValidator.ThrowIfNullOrEmpty(value, nameof(value));
 
             this.Key = key;
             this.Value = value;

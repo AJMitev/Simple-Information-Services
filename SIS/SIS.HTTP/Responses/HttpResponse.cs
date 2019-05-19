@@ -1,5 +1,6 @@
 ﻿namespace SIS.HTTP.Responses
 {
+    using System;
     using System.Text;
     using Common;
     using Contracts;
@@ -38,16 +39,17 @@
 
             byte[] httpResponseWithBody = new byte[httpResponseWithoutBody.Length + this.Content.Length];
 
-            int currentIndex = 0;
-            for (; currentIndex < httpResponseWithoutBody.Length; currentIndex++)
+
+            for (int i = 0; i < httpResponseWithoutBody.Length; i++)
             {
-                httpResponseWithBody[currentIndex] = httpResponseWithoutBody[currentIndex];
+                httpResponseWithBody[i] = httpResponseWithoutBody[i];
 
             }
 
-            for (; currentIndex < httpResponseWithoutBody.Length; currentIndex++)
+            int bodyLength = Math.Abs(httpResponseWithoutBody.Length - httpResponseWithBody.Length);
+            for (int i = 0; i < bodyLength; i++)
             {
-                httpResponseWithBody[currentIndex] = httpResponseWithoutBody[currentIndex];
+                httpResponseWithBody[i + httpResponseWithoutBody.Length] = this.Content[i];
             }
 
             return httpResponseWithBody;

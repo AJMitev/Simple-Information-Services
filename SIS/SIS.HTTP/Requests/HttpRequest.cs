@@ -51,26 +51,33 @@
 
         private void ParseRequestQueryParameters()
         {
-            var queryString = this.Url.Split(new[] { '?', '#' }).Skip(1).Take(1).ToString();
-            var queryParams = queryString.Split('&');
-
-            if (!IsValidRequestQueryString(queryString, queryParams))
+            var queryString = this.Url.Split(new[] { '?', '#' }).Skip(1).ToArray();
+            if (queryString.Any())
             {
-                throw new BadRequestException();
-            }
+                var queryParams = queryString[0].Split('&');
 
-            for (int i = 0; i < queryParams.Length; i++)
-            {
-                var data = queryParams[i].Split('=');
-                var key = data[0];
-                var val = data[1];
+                if (!IsValidRequestQueryString(queryString[0], queryParams))
+                {
+                    throw new BadRequestException();
+                }
 
-                this.QueryData.Add(key, val);
+                for (int i = 0; i < queryParams.Length; i++)
+                {
+                    var data = queryParams[i].Split('=');
+                    var key = data[0];
+                    var val = data[1];
+
+                    this.QueryData.Add(key, val);
+                }
             }
         }
 
         private void ParseRequestFormDataParameters(string requestBody)
         {
+            if (string.IsNullOrEmpty(requestBody))
+            {
+                return;
+            }
             var dataParams = requestBody.Split('&');
 
             for (int i = 0; i < dataParams.Length; i++)
@@ -96,6 +103,11 @@
         {
             for (int i = 0; i < rawHeaders.Length; i++)
             {
+                if (rawHeaders[i] == string.Empty)
+                {
+                    continue;
+                }
+
                 var data = rawHeaders[i].Split(": ");
                 var key = data[0];
                 var val = data[1];
