@@ -4,10 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using Common;
+    using Contracts;
     using Enums;
     using Exceptions;
     using Extensions;
     using Headers;
+    using Headers.Contracts;
 
     public class HttpRequest : IHttpRequest
     {

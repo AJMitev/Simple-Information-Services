@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Text;
     using Common;
+    using Contracts;
 
     public class HttpHeaderCollection : IHttpHeaderCollection
     {

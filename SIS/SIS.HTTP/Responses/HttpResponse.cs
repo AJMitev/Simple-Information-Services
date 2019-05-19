@@ -2,8 +2,11 @@
 {
     using System.Text;
     using Common;
+    using Contracts;
     using Enums;
+    using Extensions;
     using Headers;
+    using Headers.Contracts;
 
     public class HttpResponse : IHttpResponse
     {
@@ -25,13 +28,29 @@
         public byte[] Content { get; set; }
         public void AddHeader(HttpHeader header)
         {
-            CoreValidator.ThrowIfNull( header, nameof(header));
+            CoreValidator.ThrowIfNull(header, nameof(header));
             this.Headers.AddHeader(header);
         }
 
         public byte[] GetBytes()
         {
-            throw new System.NotImplementedException();
+            byte[] httpResponseWithoutBody = Encoding.UTF8.GetBytes(this.ToString());
+
+            byte[] httpResponseWithBody = new byte[httpResponseWithoutBody.Length + this.Content.Length];
+
+            int currentIndex = 0;
+            for (; currentIndex < httpResponseWithoutBody.Length; currentIndex++)
+            {
+                httpResponseWithBody[currentIndex] = httpResponseWithoutBody[currentIndex];
+
+            }
+
+            for (; currentIndex < httpResponseWithoutBody.Length; currentIndex++)
+            {
+                httpResponseWithBody[currentIndex] = httpResponseWithoutBody[currentIndex];
+            }
+
+            return httpResponseWithBody;
         }
 
         public override string ToString()
@@ -40,12 +59,12 @@
 
             sb
                 .Append(
-                    $"{GlobalConstants.HttpOneProtocolFragment} {(int) this.StatusCode} {this.StatusCode.ToString()}")
+                    $"{GlobalConstants.HttpOneProtocolFragment} {(int)this.StatusCode} {this.StatusCode.GetStatusCodeMessage()}")
                 .Append(GlobalConstants.HttpNewLine)
                 .Append(this.Headers)
                 .Append(GlobalConstants.HttpNewLine);
 
-                sb.Append(GlobalConstants.HttpNewLine);
+            sb.Append(GlobalConstants.HttpNewLine);
 
             return sb.ToString();
         }

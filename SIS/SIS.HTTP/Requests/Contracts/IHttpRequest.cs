@@ -1,8 +1,9 @@
-﻿namespace SIS.HTTP.Requests
+﻿namespace SIS.HTTP.Requests.Contracts
 {
     using System.Collections.Generic;
     using Enums;
     using Headers;
+    using Headers.Contracts;
 
     public interface IHttpRequest
     {
