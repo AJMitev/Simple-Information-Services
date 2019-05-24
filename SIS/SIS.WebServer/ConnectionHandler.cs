@@ -6,11 +6,13 @@ namespace SIS.WebServer
     using System;
     using System.Text;
     using HTTP.Common;
+    using HTTP.Cookies;
     using HTTP.Enums;
     using HTTP.Exceptions;
     using HTTP.Requests;
     using HTTP.Requests.Contracts;
     using HTTP.Responses.Contracts;
+    using HTTP.Sessions;
     using Results;
 
     public class ConnectionHandler
@@ -35,7 +37,9 @@ namespace SIS.WebServer
                 if (httpRequest !=null)
                 {
                     Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
+                    var sessionId = this.SetRequestSession(httpRequest);
                     var httpResponse = this.HandleRequest(httpRequest);
+                    this.SetResponseSession(httpResponse,sessionId);
                     this.PrepareResponse(httpResponse);
                 }
             }
@@ -99,6 +103,34 @@ namespace SIS.WebServer
             byte[] byteSegments = httpResponse.GetBytes();
 
             this.client.Send(byteSegments, SocketFlags.None);
+        }
+
+        private string SetRequestSession(IHttpRequest httpRequest)
+        {
+            string sessionId = null;
+
+            if (httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SeessionCookieKey))
+            {
+                var cookie = httpRequest.Cookies.GetCookie(HttpSessionStorage.SeessionCookieKey);
+                sessionId = cookie.Value;
+                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+            }
+            else
+            {
+                sessionId = Guid.NewGuid().ToString();
+                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+            }
+
+            return sessionId;
+        }
+
+        private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
+        {
+            if (sessionId != null)
+            {
+                HttpCookie cookie = new HttpCookie(HttpSessionStorage.SeessionCookieKey, sessionId);
+                httpResponse.AddCookie(cookie);
+            }
         }
     }
 }

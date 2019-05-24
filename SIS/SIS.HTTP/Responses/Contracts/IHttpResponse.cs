@@ -1,5 +1,6 @@
 ﻿namespace SIS.HTTP.Responses.Contracts
 {
+    using Cookies;
     using Cookies.Contracts;
     using Enums;
     using Headers;
@@ -12,6 +13,7 @@
         IHttpCookieCollection Cookies { get; }
         byte[] Content { get; set; }
         void AddHeader(HttpHeader header);
+        void AddCookie(HttpCookie cookie);
         byte[] GetBytes();
     }
 }

@@ -12,6 +12,7 @@
     using Extensions;
     using Headers;
     using Headers.Contracts;
+    using SIS.HTTP.Sessions.Contracts;
 
     public class HttpRequest : IHttpRequest
     {
@@ -34,6 +35,7 @@
         public IHttpHeaderCollection Headers { get; }
         public IHttpCookieCollection Cookies { get; }
         public HttpRequestMethod RequestMethod { get; private set; }
+        public IHttpSession Session { get ; set; }
 
         private void ParseRequest(string requestString)
         {

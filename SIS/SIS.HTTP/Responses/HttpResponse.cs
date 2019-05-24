@@ -37,6 +37,13 @@
             this.Headers.AddHeader(header);
         }
 
+        public void AddCookie(HttpCookie cookie)
+        {
+            CoreValidator.ThrowIfNull(cookie,nameof(cookie));
+
+            this.Cookies.AddCookie(cookie);
+        }
+
         public byte[] GetBytes()
         {
             byte[] httpResponseWithoutBody = Encoding.UTF8.GetBytes(this.ToString());

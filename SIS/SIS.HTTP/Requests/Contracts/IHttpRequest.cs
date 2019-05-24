@@ -5,6 +5,7 @@
     using Enums;
     using Headers;
     using Headers.Contracts;
+    using SIS.HTTP.Sessions.Contracts;
 
     public interface IHttpRequest
     {
@@ -15,5 +16,6 @@
         IHttpHeaderCollection Headers { get; }
         IHttpCookieCollection Cookies { get; }
         HttpRequestMethod RequestMethod { get; }
+        IHttpSession Session { get; set; }
     }
 }
