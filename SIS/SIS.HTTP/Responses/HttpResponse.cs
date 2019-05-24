@@ -4,6 +4,8 @@
     using System.Text;
     using Common;
     using Contracts;
+    using Cookies;
+    using Cookies.Contracts;
     using Enums;
     using Extensions;
     using Headers;
@@ -14,6 +16,7 @@
         public HttpResponse()
         {
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
             this.Content = new byte[0];
         }
 
@@ -26,6 +29,7 @@
 
         public HttpResponseStatusCode StatusCode { get; set; }
         public IHttpHeaderCollection Headers { get; }
+        public IHttpCookieCollection Cookies { get; }
         public byte[] Content { get; set; }
         public void AddHeader(HttpHeader header)
         {
@@ -65,6 +69,12 @@
                 .Append(GlobalConstants.HttpNewLine)
                 .Append(this.Headers)
                 .Append(GlobalConstants.HttpNewLine);
+
+            if (this.Cookies.HasCookies())
+            {
+                sb.Append($"Set-Cookie: {this.Cookies}")
+                    .Append(GlobalConstants.HttpNewLine);
+            }
 
             sb.Append(GlobalConstants.HttpNewLine);
 
