@@ -30,7 +30,7 @@ namespace SIS.WebServer
             this.serverRoutingTable = serverRoutingTable;
         }
 
-        public async Task ProcessRequest()
+        public async Task ProcessRequestAsync()
         {
             try
             {
