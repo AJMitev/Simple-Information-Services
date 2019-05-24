@@ -5,11 +5,14 @@
     using System.Linq;
     using Common;
     using Contracts;
+    using Cookies;
+    using Cookies.Contracts;
     using Enums;
     using Exceptions;
     using Extensions;
     using Headers;
     using Headers.Contracts;
+    using SIS.HTTP.Sessions.Contracts;
 
     public class HttpRequest : IHttpRequest
     {
@@ -20,6 +23,7 @@
             this.FromData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
 
             ParseRequest(requestString);
         }
@@ -29,7 +33,9 @@
         public Dictionary<string, object> FromData { get; }
         public Dictionary<string, object> QueryData { get; }
         public IHttpHeaderCollection Headers { get; }
+        public IHttpCookieCollection Cookies { get; }
         public HttpRequestMethod RequestMethod { get; private set; }
+        public IHttpSession Session { get ; set; }
 
         private void ParseRequest(string requestString)
         {
@@ -46,7 +52,26 @@
             this.ParseRequestPath();
 
             this.ParseRequestHeaders(splitRequestContent.Skip(1).ToArray());
+            this.ParseCookies();
+
             this.ParseRequestParameters(splitRequestContent[splitRequestContent.Length - 1]);
+        }
+
+        private void ParseCookies()
+        {
+            if (this.Headers.ContainsHeader("Cookie"))
+            {
+                HttpHeader cookieHeader = this.Headers.GetHeader("Cookie");
+                string[] cookies = cookieHeader.Value.Split("; ").ToArray();
+
+                foreach (string cookieRaw in cookies)
+                {
+                    string[] cookieData = cookieRaw.Split('=');
+                    HttpCookie cookie = new HttpCookie(cookieData[0],cookieData[1]);
+
+                    this.Cookies.AddCookie(cookie);
+                }
+            }
         }
 
         private void ParseRequestQueryParameters()
