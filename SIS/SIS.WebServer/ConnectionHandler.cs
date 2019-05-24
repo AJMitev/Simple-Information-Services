@@ -5,6 +5,7 @@ namespace SIS.WebServer
 {
     using System;
     using System.Text;
+    using System.Threading.Tasks;
     using HTTP.Common;
     using HTTP.Enums;
     using HTTP.Exceptions;
@@ -27,38 +28,38 @@ namespace SIS.WebServer
             this.serverRoutingTable = serverRoutingTable;
         }
 
-        public void ProcessRequest()
+        public async Task ProcessRequestAsync()
         {
             try
             {
-                var httpRequest = this.ReadRequest();
-                if (httpRequest !=null)
+                var httpRequest = await this.ReadRequest();
+                if (httpRequest != null)
                 {
                     Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
                     var httpResponse = this.HandleRequest(httpRequest);
-                    this.PrepareResponse(httpResponse);
+                    await this.PrepareResponse(httpResponse);
                 }
             }
             catch (BadRequestException badRequestException)
             {
-                this.PrepareResponse(new TextResult(badRequestException.Message, HttpResponseStatusCode.BadRequest));
+                await this.PrepareResponse(new TextResult(badRequestException.Message, HttpResponseStatusCode.BadRequest));
             }
             catch (Exception exception)
             {
-                this.PrepareResponse(new TextResult(exception.Message, HttpResponseStatusCode.InternalServerError));
+                await this.PrepareResponse(new TextResult(exception.Message, HttpResponseStatusCode.InternalServerError));
             }
 
             this.client.Shutdown(SocketShutdown.Both);
         }
 
-        private IHttpRequest ReadRequest()
+        private async Task<IHttpRequest> ReadRequest()
         {
             var result = new StringBuilder();
             var data = new ArraySegment<byte>(new byte[1024]);
 
             while (true)
             {
-                int numberOfBytesRead = this.client.Receive(data.Array, SocketFlags.None);
+                int numberOfBytesRead = await this.client.ReceiveAsync(data.Array, SocketFlags.None);
 
                 if (numberOfBytesRead == 0)
                 {
@@ -86,7 +87,7 @@ namespace SIS.WebServer
         {
             if (!this.serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path))
             {
-                return new TextResult($"Route with method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found.", 
+                return new TextResult($"Route with method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found.",
                     HttpResponseStatusCode.NotFound);
             }
 
@@ -94,11 +95,12 @@ namespace SIS.WebServer
                 .Invoke(httpRequest);
         }
 
-        private void PrepareResponse(IHttpResponse httpResponse)
+        private async Task PrepareResponse(IHttpResponse httpResponse)
         {
             byte[] byteSegments = httpResponse.GetBytes();
 
-            this.client.Send(byteSegments, SocketFlags.None);
+            await this.client.SendAsync(byteSegments, SocketFlags.None);
         }
+
     }
 }
