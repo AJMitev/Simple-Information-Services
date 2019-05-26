@@ -11,7 +11,7 @@
     {
         string Path { get; }
         string Url { get; }
-        Dictionary<string, object> FromData { get; }
+        Dictionary<string, object> FormData { get; }
         Dictionary<string, object> QueryData { get; }
         IHttpHeaderCollection Headers { get; }
         IHttpCookieCollection Cookies { get; }

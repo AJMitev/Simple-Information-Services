@@ -20,7 +20,7 @@
         {
             CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
 
-            this.FromData = new Dictionary<string, object>();
+            this.FormData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
             this.Headers = new HttpHeaderCollection();
             this.Cookies = new HttpCookieCollection();
@@ -30,7 +30,7 @@
 
         public string Path { get; private set; }
         public string Url { get; private set; }
-        public Dictionary<string, object> FromData { get; }
+        public Dictionary<string, object> FormData { get; }
         public Dictionary<string, object> QueryData { get; }
         public IHttpHeaderCollection Headers { get; }
         public IHttpCookieCollection Cookies { get; }
@@ -115,7 +115,7 @@
                     var key = data[0];
                     var val = data[1];
 
-                    this.FromData.Add(key, val);
+                    this.FormData.Add(key, val);
                 }
             }
         }
@@ -132,10 +132,10 @@
             {
                 if (rawHeaders[i] == string.Empty)
                 {
-                    continue;
+                    break;
                 }
 
-                var data = rawHeaders[i].Split(": ");
+                var data = rawHeaders[i].Split(": ", StringSplitOptions.RemoveEmptyEntries);
                 var key = data[0];
                 var val = data[1];
 

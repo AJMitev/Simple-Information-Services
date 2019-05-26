@@ -10,12 +10,12 @@
             this.HttpRequest = httpRequest;
         }
 
-        public IHttpResponse Index(IHttpRequest httpRequest)
+        public IHttpResponse Index()
         {
             return this.View();
         }
 
-        public IHttpResponse Home(IHttpRequest httpRequest)
+        public IHttpResponse Home()
         {
             if (!this.IsLoggedIn())
             {
