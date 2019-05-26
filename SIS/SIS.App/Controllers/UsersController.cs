@@ -1,7 +1,5 @@
 ﻿namespace SIS.App.Controllers
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using HTTP.Requests.Contracts;
     using HTTP.Responses.Contracts;
 

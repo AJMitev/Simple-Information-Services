@@ -1,25 +1,29 @@
-﻿using SIS.HTTP.Cookies;
-using SIS.HTTP.Requests.Contracts;
-using SIS.HTTP.Responses.Contracts;
-using SIS.WebServer.Results;
-using System.IO;
-using System.Runtime.CompilerServices;
-
-namespace SIS.App.Controllers
+﻿namespace SIS.App.Controllers
 {
-    public class HomeController
+    using HTTP.Requests.Contracts;
+    using HTTP.Responses.Contracts;
+
+    public class HomeController : BaseController
     {
+        public HomeController(IHttpRequest httpRequest)
+        {
+            this.HttpRequest = httpRequest;
+        }
+
         public IHttpResponse Index(IHttpRequest httpRequest)
         {
-            string controllerName = this.GetType().Name.Replace("Controller", "");
+            return this.View();
+        }
 
+        public IHttpResponse Home(IHttpRequest httpRequest)
+        {
+            if (!this.IsLoggedIn())
+            {
+                return this.Redirect("/login");
+            }
 
-            string viewContent = File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
-
-            HtmlResult htmlResult = new HtmlResult(viewContent, HTTP.Enums.HttpResponseStatusCode.Ok);
-            htmlResult.Cookies.AddCookie(new HttpCookie("lang","en"));
-
-            return htmlResult;
+            this.ViewData["Username"] = this.HttpRequest.Session.GetParameter("username");
+            return this.View();
         }
     }
 }

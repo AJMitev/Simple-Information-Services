@@ -21,7 +21,7 @@
             CoreValidator.ThrowIfNullOrEmpty(name, nameof(name));
             CoreValidator.ThrowIfNull(parameter, nameof(parameter));
 
-            this.parameters.Add(name, parameter);
+            this.parameters[name] = parameter;
         }
 
         public void ClearParameters()

@@ -1,11 +1,12 @@
-﻿namespace SIS.HTTP.Sessions
+﻿namespace SIS.WebServer.Session
 {
     using System.Collections.Concurrent;
-    using Contracts;
+    using HTTP.Sessions;
+    using HTTP.Sessions.Contracts;
 
     public class HttpSessionStorage
     {
-        public const string SeessionCookieKey = "SIS_ID";
+        public const string SessionCookieKey = "SIS_ID";
 
         private static readonly ConcurrentDictionary<string, IHttpSession> sessions =
             new ConcurrentDictionary<string, IHttpSession>();
