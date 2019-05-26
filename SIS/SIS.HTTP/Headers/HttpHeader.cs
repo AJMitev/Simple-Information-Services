@@ -4,6 +4,7 @@
 
     public class HttpHeader
     {
+        public const string Cookie = "Cookie";
         public const string Location = "Location";
         public const string ContentTypeKey = "Content-Type";
 

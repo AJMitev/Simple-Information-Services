@@ -35,7 +35,7 @@
         public string Value { get; private set; }
         public DateTime Expires { get; private set; }
         public string Path { get; set; }
-        public bool IsNew { get; private set; }
+        public bool IsNew { get; private set; } = true;
         public bool HttpOnly { get; set; }
 
         public void Delete()

@@ -59,15 +59,17 @@
 
         private void ParseCookies()
         {
-            if (this.Headers.ContainsHeader("Cookie"))
+            if (this.Headers.ContainsHeader(HttpHeader.Cookie))
             {
-                HttpHeader cookieHeader = this.Headers.GetHeader("Cookie");
-                string[] cookies = cookieHeader.Value.Split("; ").ToArray();
+                HttpHeader cookieHeader = this.Headers.GetHeader(HttpHeader.Cookie);
+                string[] cookies = cookieHeader.Value
+                    .Split("; ", StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
 
-                foreach (string cookieRaw in cookies)
+                foreach (string unparsedCookie in cookies)
                 {
-                    string[] cookieData = cookieRaw.Split('=');
-                    HttpCookie cookie = new HttpCookie(cookieData[0],cookieData[1]);
+                    string[] cookieKvp = unparsedCookie.Split('=');
+                    HttpCookie cookie = new HttpCookie(cookieKvp[0],cookieKvp[1], isNew: false);
 
                     this.Cookies.AddCookie(cookie);
                 }

@@ -2,7 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Text;
     using Common;
     using Contracts;
 
@@ -44,7 +44,7 @@
 
         public bool HasCookies()
         {
-            return this.cookies.Any();
+            return this.cookies.Count != 0;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -54,7 +54,15 @@
 
         public override string ToString()
         {
-            return string.Join(HttpCookieStringSeparator, this.cookies.Values);
+            var sb = new StringBuilder();
+
+            foreach (var cookie in this.cookies.Values)
+            {
+                sb.Append($"Set-Cookie: {cookie}")
+                    .Append(GlobalConstants.HttpNewLine);
+            }
+
+            return sb.ToString();
         }
     }
 }

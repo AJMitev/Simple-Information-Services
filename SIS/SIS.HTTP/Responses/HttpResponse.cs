@@ -34,6 +34,7 @@
         public void AddHeader(HttpHeader header)
         {
             CoreValidator.ThrowIfNull(header, nameof(header));
+
             this.Headers.AddHeader(header);
         }
 
@@ -79,7 +80,7 @@
 
             if (this.Cookies.HasCookies())
             {
-                sb.Append($"Set-Cookie: {this.Cookies}")
+                sb.Append(this.Cookies)
                     .Append(GlobalConstants.HttpNewLine);
             }
 
