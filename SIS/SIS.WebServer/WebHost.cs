@@ -26,14 +26,15 @@
             var controllers = application.GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract
                     && typeof(Controller).IsAssignableFrom(type));
-            // TODO: RemoveToString from InfoController
+
+
             foreach (var controller in controllers)
             {
                 var actions = controller
                     .GetMethods(BindingFlags.DeclaredOnly
                     | BindingFlags.Public
                     | BindingFlags.Instance)
-                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller);
+                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller && !x.IsVirtual);
                 foreach (var action in actions)
                 {
                     var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{action.Name}";
@@ -56,7 +57,6 @@
 
                     serverRoutingTable.Add(httpMethod, path, request =>
                     {
-                        // request => new UsersController().Login(request)
                         var controllerInstance = Activator.CreateInstance(controller);
                         var response = action.Invoke(controllerInstance, new[] { request }) as IHttpResponse;
                         return response;
@@ -65,13 +65,8 @@
                     Console.WriteLine(httpMethod + " " + path);
                 }
             }
-            // Reflection
-            // Assembly
-            // typeof(Server).GetMethods()
-            // sb.GetType().GetMethods();
-            // Activator.CreateInstance(typeof(Server))
+           
             var sb = DateTime.UtcNow;
-
         }
     }
 }

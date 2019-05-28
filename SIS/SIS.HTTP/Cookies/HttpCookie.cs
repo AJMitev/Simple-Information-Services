@@ -26,6 +26,7 @@
             this.Value = value;
             this.Expires = DateTime.UtcNow.AddDays(expires);
             this.Path = path;
+            this.IsNew = isNew;
         }
 
 

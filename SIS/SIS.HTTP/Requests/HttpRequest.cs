@@ -43,13 +43,7 @@
 
         private bool IsValidRequestLine(string[] requestLineParams)
         {
-            if (requestLineParams.Length != 3
-                || requestLineParams[2] != GlobalConstants.HttpOneProtocolFragment)
-            {
-                return false;
-            }
-
-            return true;
+            return requestLineParams.Length == 3 && requestLineParams[2] == GlobalConstants.HttpOneProtocolFragment;
         }
 
         private bool IsValidRequestQueryString(string queryString, string[] queryParameters)
