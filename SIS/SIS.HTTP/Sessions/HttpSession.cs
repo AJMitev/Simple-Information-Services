@@ -2,45 +2,49 @@
 {
     using System.Collections.Generic;
     using Common;
-    using Contracts;
 
     public class HttpSession : IHttpSession
     {
-        private readonly Dictionary<string, object> parameters;
+        private readonly Dictionary<string, object> sessionParameters;
 
         public HttpSession(string id)
         {
             this.Id = id;
-            this.parameters = new Dictionary<string, object>();
+            this.IsNew = true;
+            this.sessionParameters = new Dictionary<string, object>();
         }
 
-        public string Id { get; private set; }
+        public string Id { get; }
 
-        public void AddParameter(string name, object parameter)
+        public bool IsNew { get; set; }
+
+        public object GetParameter(string parameterName)
         {
-            CoreValidator.ThrowIfNullOrEmpty(name, nameof(name));
+            CoreValidator.ThrowIfNullOrEmpty(parameterName, nameof(parameterName));
+
+            // TODO: Validation for existing parameter (maybe throw exception)
+
+            return this.sessionParameters[parameterName];
+        }
+
+        public bool ContainsParameter(string parameterName)
+        {
+            CoreValidator.ThrowIfNullOrEmpty(parameterName, nameof(parameterName));
+
+            return this.sessionParameters.ContainsKey(parameterName);
+        }
+
+        public void AddParameter(string parameterName, object parameter)
+        {
+            CoreValidator.ThrowIfNullOrEmpty(parameterName, nameof(parameterName));
             CoreValidator.ThrowIfNull(parameter, nameof(parameter));
 
-            this.parameters[name] = parameter;
+            this.sessionParameters[parameterName] = parameter;
         }
 
         public void ClearParameters()
         {
-            this.parameters.Clear();
-        }
-
-        public bool ContainsParameter(string name)
-        {
-            CoreValidator.ThrowIfNullOrEmpty(name,nameof(name));
-
-            return this.parameters.ContainsKey(name);
-        }
-
-        public object GetParameter(string name)
-        {
-            CoreValidator.ThrowIfNullOrEmpty(name, nameof(name));
-
-            return this.parameters[name];
+            this.sessionParameters.Clear();
         }
     }
 }

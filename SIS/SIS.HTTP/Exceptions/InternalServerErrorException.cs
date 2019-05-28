@@ -5,15 +5,13 @@
     public class InternalServerErrorException : Exception
     {
         private const string InternalServerErrorExceptionDefaultMessage = "The Server has encountered an error.";
-        public InternalServerErrorException()
-        : base(InternalServerErrorExceptionDefaultMessage)
+
+        public InternalServerErrorException() : this(InternalServerErrorExceptionDefaultMessage)
         {
         }
 
-        public InternalServerErrorException(string message)
-        : base(message)
+        public InternalServerErrorException(string name) : base(name)
         {
-
         }
     }
 }

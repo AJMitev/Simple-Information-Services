@@ -8,7 +8,7 @@
         {
             if (obj == null)
             {
-                throw  new ArgumentNullException(name);
+                throw new ArgumentNullException(name);
             }
         }
 
@@ -16,7 +16,7 @@
         {
             if (string.IsNullOrEmpty(text))
             {
-                throw new ArgumentException($"{name} cannot be null or empty", name);
+                throw new ArgumentNullException($"{name} cannot be null or empty", name);
             }
         }
     }

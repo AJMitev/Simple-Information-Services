@@ -11,14 +11,14 @@
         public TextResult(string content, HttpResponseStatusCode responseStatusCode, string contentType = GlobalConstants.ContentTypePlainText)
         : base(responseStatusCode)
         {
-            this.Headers.AddHeader(new HttpHeader(HttpHeader.ContentTypeKey, contentType));
+            this.Headers.AddHeader(new HttpHeader(HttpHeader.ContentType, contentType));
             this.Content = Encoding.UTF8.GetBytes(content);
         }
 
         public TextResult(byte[] content, HttpResponseStatusCode responseStatusCode, string contentType = GlobalConstants.ContentTypePlainText)
             : base(responseStatusCode)
         {
-            this.Headers.AddHeader(new HttpHeader(HttpHeader.ContentTypeKey, contentType));
+            this.Headers.AddHeader(new HttpHeader(HttpHeader.ContentType, contentType));
             this.Content = content;
         }
     }

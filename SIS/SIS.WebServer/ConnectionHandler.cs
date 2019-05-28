@@ -1,23 +1,26 @@
 ﻿namespace SIS.WebServer
 {
     using System;
+    using System.IO;
     using System.Net.Sockets;
+    using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
-    using HTTP.Common;
-    using HTTP.Cookies;
-    using HTTP.Enums;
-    using HTTP.Exceptions;
-    using HTTP.Requests;
-    using HTTP.Requests.Contracts;
-    using HTTP.Responses.Contracts;
-    using Results;
-    using Routing.Contracts;
-    using Session;
+    using SIS.HTTP.Common;
+    using SIS.HTTP.Cookies;
+    using SIS.HTTP.Enums;
+    using SIS.HTTP.Exceptions;
+    using SIS.HTTP.Requests;
+    using SIS.HTTP.Responses;
+    using SIS.HTTP.Sessions;
+    using SIS.WebServer.Result;
+    using SIS.WebServer.Routing;
+    using SIS.WebServer.Sessions;
 
     public class ConnectionHandler
     {
         private readonly Socket client;
+
         private readonly IServerRoutingTable serverRoutingTable;
 
         public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable)
@@ -29,51 +32,25 @@
             this.serverRoutingTable = serverRoutingTable;
         }
 
-        public async Task ProcessRequestAsync()
+        private async Task<IHttpRequest> ReadRequestAsync()
         {
-            try
-            {
-                var httpRequest = await this.ReadRequest();
-                if (httpRequest != null)
-                {
-                    Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
-                    var sessionId = this.SetRequestSession(httpRequest);
-                    var httpResponse = this.HandleRequest(httpRequest);
-
-                    this.SetResponseSession(httpResponse, sessionId);
-                    await this.PrepareResponse(httpResponse);
-                }
-            }
-            catch (BadRequestException badRequestException)
-            {
-                await this.PrepareResponse(new TextResult(badRequestException.Message, HttpResponseStatusCode.BadRequest));
-            }
-            catch (Exception exception)
-            {
-                await this.PrepareResponse(new TextResult(exception.Message, HttpResponseStatusCode.InternalServerError));
-            }
-
-            this.client.Shutdown(SocketShutdown.Both);
-        }
-
-        private async Task<IHttpRequest> ReadRequest()
-        {
+            // PARSE REQUEST FROM BYTE DATA
             var result = new StringBuilder();
             var data = new ArraySegment<byte>(new byte[1024]);
 
             while (true)
             {
-                int numberOfBytesRead = await this.client.ReceiveAsync(data.Array, SocketFlags.None);
+                int numberOfBytesToRead = await this.client.ReceiveAsync(data, SocketFlags.None);
 
-                if (numberOfBytesRead == 0)
+                if (numberOfBytesToRead == 0)
                 {
                     break;
                 }
 
-                var bytesAsString = Encoding.UTF8.GetString(data.Array, 0, numberOfBytesRead);
+                var bytesAsString = Encoding.UTF8.GetString(data.Array, 0, numberOfBytesToRead);
                 result.Append(bytesAsString);
 
-                if (numberOfBytesRead < 1023)
+                if (numberOfBytesToRead < 1023)
                 {
                     break;
                 }
@@ -87,50 +64,111 @@
             return new HttpRequest(result.ToString());
         }
 
-        private IHttpResponse HandleRequest(IHttpRequest httpRequest)
+        private IHttpResponse ReturnIfResource(IHttpRequest httpRequest)
         {
-            if (!this.serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path))
-            {
-                return new TextResult($"Route with method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found.",
-                    HttpResponseStatusCode.NotFound);
-            }
+            string folderPrefix = "/../";
+            string assemblyLocation = Assembly.GetExecutingAssembly().Location;
+            string resourceFolderPath = "Resources/";
+            string requestedResource = httpRequest.Path;
 
-            return this.serverRoutingTable.Get(httpRequest.RequestMethod, httpRequest.Path)
-                .Invoke(httpRequest);
+            string fullPathToResource = assemblyLocation + folderPrefix + resourceFolderPath + requestedResource;
+
+            if (File.Exists(fullPathToResource))
+            {
+                byte[] content = File.ReadAllBytes(fullPathToResource);
+                return new InlineResourceResult(content, HttpResponseStatusCode.Ok);
+            }
+            else
+            {
+                return new TextResult($"Route with method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found.", HttpResponseStatusCode.NotFound);
+            }
         }
 
-        private async Task PrepareResponse(IHttpResponse httpResponse)
+        private IHttpResponse HandleRequest(IHttpRequest httpRequest)
         {
-            byte[] byteSegments = httpResponse.GetBytes();
+            // EXECUTE FUNCTION FOR CURRENT REQUEST -> RETURNS RESPONSE
+            if (!this.serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path))
+            {
+                return this.ReturnIfResource(httpRequest);
+            }
 
-            await this.client.SendAsync(byteSegments, SocketFlags.None);
+            return this.serverRoutingTable.Get(httpRequest.RequestMethod, httpRequest.Path).Invoke(httpRequest);
         }
 
         private string SetRequestSession(IHttpRequest httpRequest)
         {
-            string sessionId = null;
-
             if (httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
             {
-                var cookie = httpRequest.Cookies.GetCookie(HttpSessionStorage.SessionCookieKey);
-                sessionId = cookie.Value;
-            }
-            else
-            {
-                sessionId = Guid.NewGuid().ToString();
+                var cookie = httpRequest
+                    .Cookies
+                    .GetCookie(HttpSessionStorage.SessionCookieKey);
+
+                string sessionId = cookie.Value;
+
+                if (HttpSessionStorage.ContainsSession(sessionId))
+                {
+                    httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                }
             }
 
-            httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
-            return httpRequest.Session.Id;
+            if (httpRequest.Session == null)
+            {
+                string sessionId = Guid.NewGuid().ToString();
+
+                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+            }
+
+            return httpRequest.Session?.Id;
         }
 
         private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
         {
-            if (sessionId != null)
+            IHttpSession responseSession = HttpSessionStorage.GetSession(sessionId);
+
+            if (responseSession.IsNew)
             {
-                HttpCookie cookie = new HttpCookie(HttpSessionStorage.SessionCookieKey, sessionId);
-                httpResponse.AddCookie(cookie);
+                responseSession.IsNew = false;
+                httpResponse.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, responseSession.Id));
             }
+        }
+
+        private void PrepareResponse(IHttpResponse httpResponse)
+        {
+            // PREPARES RESPONSE -> MAPS IT TO BYTE DATA
+            byte[] byteSegments = httpResponse.GetBytes();
+
+            this.client.Send(byteSegments, SocketFlags.None);
+        }
+
+        public async Task ProcessRequestAsync()
+        {
+            IHttpResponse httpResponse = null;
+            try
+            {
+                IHttpRequest httpRequest = await this.ReadRequestAsync();
+
+                if (httpRequest != null)
+                {
+                    Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
+
+                    string sessionId = this.SetRequestSession(httpRequest);
+
+                    httpResponse = this.HandleRequest(httpRequest);
+
+                    this.SetResponseSession(httpResponse, sessionId);
+                }
+            }
+            catch (BadRequestException e)
+            {
+                httpResponse = new TextResult(e.Message, HttpResponseStatusCode.BadRequest);
+            }
+            catch (Exception e)
+            {
+                httpResponse = new TextResult(e.Message, HttpResponseStatusCode.InternalServerError);
+            }
+            this.PrepareResponse(httpResponse);
+
+            this.client.Shutdown(SocketShutdown.Both);
         }
     }
 }

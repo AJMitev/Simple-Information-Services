@@ -1,65 +1,65 @@
-﻿namespace SIS.HTTP.Cookies
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Text;
-    using Common;
-    using Contracts;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using SIS.HTTP.Common;
+using SIS.HTTP.Cookies.Contracts;
 
+namespace SIS.HTTP.Cookies
+{
     public class HttpCookieCollection : IHttpCookieCollection
     {
-        private const string HttpCookieStringSeparator = "; ";
-        private readonly Dictionary<string, HttpCookie> cookies;
+        private Dictionary<string, HttpCookie> httpCookies;
 
         public HttpCookieCollection()
         {
-            this.cookies = new Dictionary<string, HttpCookie>();
+            this.httpCookies = new Dictionary<string, HttpCookie>();
         }
 
-        public void AddCookie(HttpCookie cookie)
+        public void AddCookie(HttpCookie httpCookie)
         {
-            CoreValidator.ThrowIfNull(cookie, nameof(cookie));
+            CoreValidator.ThrowIfNull(httpCookie, nameof(httpCookie));
 
-            this.cookies.Add(cookie.Key, cookie);
+            this.httpCookies.Add(httpCookie.Key, httpCookie);
         }
 
         public bool ContainsCookie(string key)
         {
             CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
 
-            return this.cookies.ContainsKey(key);
+            return this.httpCookies.ContainsKey(key);
         }
 
         public HttpCookie GetCookie(string key)
         {
             CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
 
-            return this.cookies[key];
-        }
+            // TODO: Validation for existing parameter (maybe throw exception)
 
-        public IEnumerator<HttpCookie> GetEnumerator()
-        {
-            return this.cookies.Values.GetEnumerator();
+            return this.httpCookies[key];
         }
 
         public bool HasCookies()
         {
-            return this.cookies.Count != 0;
+            return this.httpCookies.Count != 0;
+        }
+
+        public IEnumerator<HttpCookie> GetEnumerator()
+        {
+            return this.httpCookies.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.cookies.Values.GetEnumerator();
+            return GetEnumerator();
         }
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
-            foreach (var cookie in this.cookies.Values)
-            {
-                sb.Append($"Set-Cookie: {cookie}")
-                    .Append(GlobalConstants.HttpNewLine);
+            foreach (var cookie in this.httpCookies.Values)
+            {                
+                sb.Append($"Set-Cookie: {cookie}").Append(GlobalConstants.HttpNewLine);
             }
 
             return sb.ToString();

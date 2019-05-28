@@ -1,28 +1,31 @@
 ﻿namespace SIS.HTTP.Headers
 {
-    using Common;
+    using SIS.HTTP.Common;
 
     public class HttpHeader
     {
         public const string Cookie = "Cookie";
+        
         public const string Location = "Location";
-        public const string ContentTypeKey = "Content-Type";
+        
+        public const string ContentType = "Content-Type";
+
+        public const string ContentLength = "Content-Length";
+
+        public const string ContentDisposition = "Content-Disposition";
 
         public HttpHeader(string key, string value)
         {
             CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
             CoreValidator.ThrowIfNullOrEmpty(value, nameof(value));
-
             this.Key = key;
             this.Value = value;
         }
 
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string Key { get; }
 
-        public override string ToString()
-        {
-            return $"{this.Key}: {this.Value}";
-        }
+        public string Value { get; }
+
+        public override string ToString() => $"{this.Key}: {this.Value}";
     }
 }

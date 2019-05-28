@@ -2,7 +2,6 @@
 {
     using System.Collections.Concurrent;
     using HTTP.Sessions;
-    using HTTP.Sessions.Contracts;
 
     public class HttpSessionStorage
     {
