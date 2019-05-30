@@ -1,12 +1,11 @@
-﻿namespace SIS.WebServer
+﻿namespace SIS.MvcFramework
 {
     using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
-    using SIS.HTTP.Common;
-    using SIS.WebServer.Routing;
-
+    using HTTP.Common;
+    using Routing;
 
     public class Server
     {

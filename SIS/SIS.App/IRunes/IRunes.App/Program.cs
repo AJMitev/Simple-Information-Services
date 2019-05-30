@@ -1,6 +1,6 @@
 ﻿namespace IRunes.App
 {
-    using SIS.WebServer;
+    using SIS.MvcFramework;
 
     public static class Program
     {

@@ -1,10 +1,10 @@
-﻿namespace SIS.WebServer.Result
+﻿namespace SIS.MvcFramework.Result
 {
     using System.Text;
-    using WebServer.Common;
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Headers;
-    using SIS.HTTP.Responses;
+    using Common;
+    using HTTP.Enums;
+    using HTTP.Headers;
+    using HTTP.Responses;
 
     public class HtmlResult : HttpResponse
     {

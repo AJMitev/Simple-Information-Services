@@ -1,4 +1,4 @@
-﻿namespace SIS.WebServer.Common
+﻿namespace SIS.MvcFramework.Common
 {
     public static class GlobalConstants
     {

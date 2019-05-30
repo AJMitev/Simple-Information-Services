@@ -1,6 +1,8 @@
-﻿namespace SIS.WebServer.Attributes.Action
+﻿namespace SIS.MvcFramework.Attributes.Action
 {
-    public class NonActionAttribute
+    using System;
+
+    public class NonActionAttribute : Attribute
     {
         
     }

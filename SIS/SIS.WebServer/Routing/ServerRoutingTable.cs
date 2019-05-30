@@ -1,11 +1,11 @@
-﻿namespace SIS.WebServer.Routing
+﻿namespace SIS.MvcFramework.Routing
 {
     using System;
     using System.Collections.Generic;
-    using SIS.HTTP.Common;
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Requests;
-    using SIS.HTTP.Responses;
+    using HTTP.Common;
+    using HTTP.Enums;
+    using HTTP.Requests;
+    using HTTP.Responses;
 
     public class ServerRoutingTable : IServerRoutingTable
     {

@@ -1,4 +1,4 @@
-﻿namespace SIS.WebServer
+﻿namespace SIS.MvcFramework
 {
     using Routing;
 

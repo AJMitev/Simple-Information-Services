@@ -1,4 +1,4 @@
-﻿namespace SIS.WebServer
+﻿namespace SIS.MvcFramework
 {
     using System;
     using System.IO;
@@ -6,16 +6,16 @@
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
-    using SIS.HTTP.Common;
-    using SIS.HTTP.Cookies;
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Exceptions;
-    using SIS.HTTP.Requests;
-    using SIS.HTTP.Responses;
-    using SIS.HTTP.Sessions;
-    using SIS.WebServer.Result;
-    using SIS.WebServer.Routing;
-    using SIS.WebServer.Sessions;
+    using HTTP.Common;
+    using HTTP.Cookies;
+    using HTTP.Enums;
+    using HTTP.Exceptions;
+    using HTTP.Requests;
+    using HTTP.Responses;
+    using HTTP.Sessions;
+    using Result;
+    using Routing;
+    using Sessions;
 
     public class ConnectionHandler
     {

@@ -1,7 +1,7 @@
-﻿namespace SIS.WebServer.Sessions
+﻿namespace SIS.MvcFramework.Sessions
 {
     using System.Collections.Concurrent;
-    using SIS.HTTP.Sessions;
+    using HTTP.Sessions;
 
     public class HttpSessionStorage
     {

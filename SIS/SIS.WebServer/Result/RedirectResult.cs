@@ -1,9 +1,8 @@
-﻿namespace SIS.WebServer.Result
+﻿namespace SIS.MvcFramework.Result
 {
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Headers;
-    using SIS.HTTP.Responses;
-
+    using HTTP.Enums;
+    using HTTP.Headers;
+    using HTTP.Responses;
 
     public class RedirectResult : HttpResponse
     {

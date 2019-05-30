@@ -1,4 +1,4 @@
-﻿namespace SIS.WebServer.Session
+﻿namespace SIS.MvcFramework.Session
 {
     using System.Collections.Concurrent;
     using HTTP.Sessions;

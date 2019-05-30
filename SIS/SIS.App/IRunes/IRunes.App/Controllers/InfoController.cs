@@ -2,7 +2,7 @@
 {
     using SIS.HTTP.Requests;
     using SIS.HTTP.Responses;
-    using SIS.WebServer;
+    using SIS.MvcFramework;
 
     public class InfoController : Controller
     {
