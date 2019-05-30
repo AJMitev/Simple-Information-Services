@@ -4,9 +4,8 @@
     using Common;
     using HTTP.Enums;
     using HTTP.Headers;
-    using HTTP.Responses;
 
-    public class TextResult : HttpResponse
+    public class TextResult : ActionResult
     {
         public TextResult(string content, HttpResponseStatusCode responseStatusCode, 
             string contentType = GlobalConstants.ContentTypePlainText) : base(responseStatusCode)

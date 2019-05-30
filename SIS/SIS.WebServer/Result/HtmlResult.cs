@@ -4,9 +4,8 @@
     using Common;
     using HTTP.Enums;
     using HTTP.Headers;
-    using HTTP.Responses;
 
-    public class HtmlResult : HttpResponse
+    public class HtmlResult : ActionResult
     {
         public HtmlResult(string content, HttpResponseStatusCode responseStatusCode = HttpResponseStatusCode.Ok)
             : base(responseStatusCode)

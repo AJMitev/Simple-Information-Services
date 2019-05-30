@@ -1,0 +1,30 @@
+﻿namespace SIS.MvcFramework.Extensions
+{
+    using System.IO;
+    using System.Xml.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
+
+    public static class ObjectExtensions
+    {
+        public static string ToXml(this object obj)
+        {
+            using (var stringWriter = new StringWriter())
+            {
+                var serializer = new XmlSerializer(obj.GetType());
+                serializer.Serialize(stringWriter, obj);
+                return stringWriter.ToString();
+            }
+        }
+
+        public static string ToJson(this object obj)
+        {
+            var resolver = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, resolver);
+        }
+    }
+}

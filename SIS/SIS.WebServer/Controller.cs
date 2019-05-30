@@ -1,10 +1,9 @@
 ﻿namespace SIS.MvcFramework
 {
     using System.Collections.Generic;
-    using System.IO;
     using System.Runtime.CompilerServices;
+    using Extensions;
     using HTTP.Requests;
-    using HTTP.Responses;
     using Result;
 
     public abstract class Controller
@@ -44,12 +43,12 @@
             httpRequest.Session.ClearParameters();
         }
 
-        protected IHttpResponse View([CallerMemberName] string view = null)
+        protected ActionResult View([CallerMemberName] string view = null)
         {
             string controllerName = GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
-            string viewContent = File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
+            string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
 
             viewContent = ParseTemplate(viewContent);
 
@@ -58,9 +57,25 @@
             return htmlResult;
         }
 
-        protected IHttpResponse Redirect(string url)
+        protected ActionResult Redirect(string url)
         {
             return new RedirectResult(url);
+        }
+
+        protected ActionResult Xml(object content)
+        {
+
+            return new XmlResult(content.ToXml());
+        }
+
+        protected ActionResult Json(object content)
+        {
+            return  new JsonResult(content.ToJson());
+        }
+
+        protected ActionResult File(object content)
+        {
+            return  new FileResult(null);
         }
     }
 }

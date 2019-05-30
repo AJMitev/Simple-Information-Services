@@ -25,6 +25,7 @@
 
         public HttpResponseStatusCode StatusCode { get; set; }
 
+        
         public IHttpHeaderCollection Headers { get; }
 
         public IHttpCookieCollection Cookies { get; }
