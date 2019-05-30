@@ -8,4 +8,8 @@
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Attributes\Action\" />
+  </ItemGroup>
+
 </Project>

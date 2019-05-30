@@ -1,4 +1,4 @@
-﻿namespace SIS.WebServer.Attributes
+﻿namespace SIS.WebServer.Attributes.Http
 {
     using System;
     using HTTP.Enums;

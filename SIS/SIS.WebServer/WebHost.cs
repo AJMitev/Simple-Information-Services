@@ -3,7 +3,8 @@
     using System;
     using System.Linq;
     using System.Reflection;
-    using Attributes;
+    using Attributes.Action;
+    using Attributes.Http;
     using HTTP.Enums;
     using HTTP.Responses;
     using Routing;
@@ -32,9 +33,14 @@
             {
                 var actions = controller
                     .GetMethods(BindingFlags.DeclaredOnly
-                    | BindingFlags.Public
-                    | BindingFlags.Instance)
-                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller && !x.IsVirtual);
+                        | BindingFlags.Public
+                        | BindingFlags.Instance)
+                    .Where(x => !x.IsSpecialName
+                                && x.DeclaringType == controller
+                                && !x.IsVirtual
+                                && x.GetCustomAttributes()
+                                    .All(a => a.GetType() != typeof(NonActionAttribute)));
+
                 foreach (var action in actions)
                 {
                     var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{action.Name}";
@@ -65,7 +71,7 @@
                     Console.WriteLine(httpMethod + " " + path);
                 }
             }
-           
+
             var sb = DateTime.UtcNow;
         }
     }
