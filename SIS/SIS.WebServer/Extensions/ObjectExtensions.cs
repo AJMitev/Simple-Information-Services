@@ -27,4 +27,4 @@
             return JsonConvert.SerializeObject(obj, Formatting.Indented, resolver);
         }
     }
-}
+} 

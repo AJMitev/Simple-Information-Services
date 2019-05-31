@@ -4,6 +4,7 @@
     using System.Runtime.CompilerServices;
     using Extensions;
     using HTTP.Requests;
+    using Identity;
     using Result;
 
     public abstract class Controller
@@ -13,7 +14,10 @@
             ViewData = new Dictionary<string, object>();
         }
 
-        protected Dictionary<string, object> ViewData;
+        protected Dictionary<string, object> ViewData { get; private set; }
+
+        protected Principal User => this.Request.Session.GetParameter("principal") as Principal;
+        public IHttpRequest Request { get; set; }
 
         private string ParseTemplate(string viewContent)
         {
@@ -26,21 +30,26 @@
             return viewContent;
         }
 
-        protected bool IsLoggedIn(IHttpRequest request)
+        protected bool IsLoggedIn()
         {
-            return request.Session.ContainsParameter("username");
+            return this.User != null;
         }
 
-        protected void SignIn(IHttpRequest httpRequest, string id, string username, string email)
+        protected void SignIn(string id, string username, string email)
         {
-            httpRequest.Session.AddParameter("id", id);
-            httpRequest.Session.AddParameter("username", username);
-            httpRequest.Session.AddParameter("email", email);
+            var principal = new Principal
+            {
+                Id = id,
+                Username = username,
+                Email = email
+            };
+
+            this.Request.Session.AddParameter("principal", principal);
         }
 
-        protected void SignOut(IHttpRequest httpRequest)
+        protected void SignOut()
         {
-            httpRequest.Session.ClearParameters();
+            this.Request.Session.ClearParameters();
         }
 
         protected ActionResult View([CallerMemberName] string view = null)
@@ -70,12 +79,12 @@
 
         protected ActionResult Json(object content)
         {
-            return  new JsonResult(content.ToJson());
+            return new JsonResult(content.ToJson());
         }
 
-        protected ActionResult File(object content)
+        protected ActionResult File(byte[] content)
         {
-            return  new FileResult(null);
+            return new FileResult(content);
         }
     }
 }
