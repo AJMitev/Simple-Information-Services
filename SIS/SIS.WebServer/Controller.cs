@@ -16,7 +16,11 @@
 
         protected Dictionary<string, object> ViewData { get; private set; }
 
-        protected Principal User => this.Request.Session.GetParameter("principal") as Principal;
+        //TODO: Refactor.
+        public Principal User => this.Request.Session.ContainsParameter("principal")
+            ? this.Request.Session.GetParameter("principal") as Principal 
+            : null;
+
         public IHttpRequest Request { get; set; }
 
         private string ParseTemplate(string viewContent)
@@ -32,7 +36,7 @@
 
         protected bool IsLoggedIn()
         {
-            return this.User != null;
+            return this.Request.Session.ContainsParameter("principal");
         }
 
         protected void SignIn(string id, string username, string email)

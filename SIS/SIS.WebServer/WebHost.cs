@@ -5,6 +5,7 @@
     using System.Reflection;
     using Attributes.Action;
     using Attributes.Http;
+    using Attributes.Security;
     using HTTP.Enums;
     using HTTP.Responses;
     using Result;
@@ -45,7 +46,8 @@
                 foreach (var action in actions)
                 {
                     var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{action.Name}";
-                    var attribute = action.GetCustomAttributes().LastOrDefault(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute))) as BaseHttpAttribute;
+                    var attribute = action.GetCustomAttributes()
+                        .LastOrDefault(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute))) as BaseHttpAttribute;
                     var httpMethod = HttpRequestMethod.Get;
                     if (attribute != null)
                     {
@@ -66,6 +68,17 @@
                     {
                         var controllerInstance = Activator.CreateInstance(controller);
                         ((Controller)controllerInstance).Request = request;
+
+                        // Authorization - TODO: Refactor this.
+                        var controllerPrinciple = ((Controller)controllerInstance).User;
+                        var authorizeAttribute = action.GetCustomAttributes()
+                            .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
+                        if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrinciple))
+                        {
+                            //TODO: Redirect to configured URL
+                            return new HttpResponse(HttpResponseStatusCode.Forbidden);
+                        }
+
                         var response = action.Invoke(controllerInstance, new object[0]) as ActionResult;
                         return response;
                     });

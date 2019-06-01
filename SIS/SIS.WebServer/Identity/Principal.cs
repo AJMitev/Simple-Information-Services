@@ -4,6 +4,9 @@
 
     public class Principal
     {
+        public const string Anonymous = "anonymous";
+        public const string Authorized = "authorized";
+
         public Principal()
         {
             this.Roles = new List<string>();
