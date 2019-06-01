@@ -2,15 +2,15 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Data;
     using Extensions;
-    using Microsoft.EntityFrameworkCore;
     using Models;
     using Services;
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes.Http;
     using SIS.MvcFramework.Attributes.Security;
+    using SIS.MvcFramework.Mapping;
     using SIS.MvcFramework.Result;
+    using ViewModels;
 
     public class AlbumsController : Controller
     {
@@ -35,7 +35,7 @@
             {
                 this.ViewData["Albums"] =
                     string.Join(string.Empty,
-                    allAlbums.Select(album => album.ToHtmlAll()).ToList());
+                    allAlbums.Select(album => album.ToHtmlAll()).ToList().To<AlbumViewModel>());
             }
 
             return this.View();
