@@ -9,6 +9,7 @@
     using SIS.MvcFramework.Attributes.Http;
     using SIS.MvcFramework.Attributes.Security;
     using SIS.MvcFramework.Result;
+    using ViewModels;
 
     public class TracksController : Controller
     {
@@ -71,6 +72,7 @@
 
             this.ViewData["AlbumId"] = albumId;
             this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
+
             return this.View();
         }
     }
