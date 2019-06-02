@@ -58,14 +58,14 @@
 
         protected ActionResult View([CallerMemberName] string view = null)
         {
-            string controllerName = GetType().Name.Replace("Controller", string.Empty);
+            string controllerName = this.GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
             string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
 
             viewContent = ParseTemplate(viewContent);
 
-            HtmlResult htmlResult = new HtmlResult(viewContent);
+            var htmlResult = new HtmlResult(viewContent);
 
             return htmlResult;
         }

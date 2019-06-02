@@ -5,14 +5,14 @@
 
     public static class ModelMapper
     {
-        public static TDestination ProjectTo<TDestination>(object origin, TDestination destination)
+        public static TDestination ProjectTo<TDestination>(object origin)
         {
-            var destinationInstance = (TDestination)Activator.CreateInstance(destination.GetType());
+            var destinationInstance = (TDestination)Activator.CreateInstance(typeof(TDestination));
 
             foreach (var originProperty in origin.GetType().GetProperties())
             {
                 string propertyName = originProperty.Name;
-                PropertyInfo destinationProperty = destination.GetType().GetProperty(propertyName);
+                PropertyInfo destinationProperty = destinationInstance.GetType().GetProperty(propertyName);
 
                 if (destinationProperty != null)
                 {

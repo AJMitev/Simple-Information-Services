@@ -8,9 +8,7 @@
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes.Http;
     using SIS.MvcFramework.Attributes.Security;
-    using SIS.MvcFramework.Mapping;
     using SIS.MvcFramework.Result;
-    using ViewModels;
 
     public class AlbumsController : Controller
     {
@@ -35,7 +33,7 @@
             {
                 this.ViewData["Albums"] =
                     string.Join(string.Empty,
-                    allAlbums.Select(album => album.ToHtmlAll()).ToList().To<AlbumViewModel>());
+                    allAlbums.Select(album => album.ToHtmlAll()).ToList());
             }
 
             return this.View();
