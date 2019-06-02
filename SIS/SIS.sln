@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.HTTP", "SIS.HTTP\SIS.HTTP.csproj", "{100DBBDA-777F-4676-BD87-6A35D7CEE91A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.MvcFramework", "SIS.WebServer\SIS.MvcFramework.csproj", "{EC005E80-D134-4F0C-A6BD-39D333595E97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.MvcFramework", "SIS.MvcFramework\SIS.MvcFramework.csproj", "{EC005E80-D134-4F0C-A6BD-39D333595E97}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{1A81D311-4B82-4596-A734-21C4F2568222}"
 EndProject
@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IRunes.Data", "SIS.App\IRun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IRunes.Models", "SIS.App\IRunes\IRunes.Models\IRunes.Models.csproj", "{6853F6AC-88D9-4214-9E50-2C8171EDF61D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRunes.Services", "SIS.App\IRunes\IRunes.Services\IRunes.Services.csproj", "{B20A9282-26D3-47F7-BAB6-81F295E18B6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IRunes.Services", "SIS.App\IRunes\IRunes.Services\IRunes.Services.csproj", "{B20A9282-26D3-47F7-BAB6-81F295E18B6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIS.MvcFramework.Tests", "SIS.MvcFramework.Tests\SIS.MvcFramework.Tests.csproj", "{BB949D9F-7C0E-4CFA-BB28-BC5FB5DE1947}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{B20A9282-26D3-47F7-BAB6-81F295E18B6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B20A9282-26D3-47F7-BAB6-81F295E18B6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B20A9282-26D3-47F7-BAB6-81F295E18B6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB949D9F-7C0E-4CFA-BB28-BC5FB5DE1947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB949D9F-7C0E-4CFA-BB28-BC5FB5DE1947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB949D9F-7C0E-4CFA-BB28-BC5FB5DE1947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB949D9F-7C0E-4CFA-BB28-BC5FB5DE1947}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
