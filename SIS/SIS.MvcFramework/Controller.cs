@@ -50,10 +50,10 @@
 
         protected ActionResult View([CallerMemberName]string view = null)
         {
-            return this.View(view);
+            return this.View<object>(null,view);
         }
 
-        protected ActionResult View<T>([CallerMemberName] string view = null, T model = null)
+        protected ActionResult View<T>(T model = null, [CallerMemberName] string view = null)
             where T : class
         {
             string controllerName = this.GetType().Name.Replace("Controller", string.Empty);

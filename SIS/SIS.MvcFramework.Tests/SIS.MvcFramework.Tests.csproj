@@ -29,7 +29,7 @@
     <None Update="ViewTests\UseModelData.Result.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ViewTests\UserForForeachAndIf .Result.html">
+    <None Update="ViewTests\UserForForeachAndIf.Result.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ViewTests\UserForForeachAndIf.html">

@@ -8,9 +8,10 @@
     public class TestViewEngine
     {
         [Theory]
-        [InlineData("TestWithoutCsharpCode")]
-        [InlineData("UseModelData")]
+        
         [InlineData("UserForForeachAndIf")]
+        [InlineData("UseModelData")]
+        [InlineData("TestWithoutCsharpCode")]
         public void TestGetHtml(string testFileName)
         {
             IViewEngine viewEngine = new SisViewEngine();
@@ -33,7 +34,7 @@
 
             var actualResult = viewEngine.GetHtml<object>(viewContent, model);
 
-            Assert.Equal(expectedContent,actualResult);
+            Assert.Equal(expectedContent.Trim(),actualResult.Trim());
         }
     }
 }
