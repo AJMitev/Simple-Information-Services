@@ -1,6 +1,5 @@
 ﻿namespace SIS.MvcFramework
 {
-    using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using Extensions;
     using HTTP.Requests;
@@ -13,12 +12,9 @@
         private readonly IViewEngine viewEngine;
         protected Controller()
         {
-            ViewData = new Dictionary<string, object>();
             viewEngine = new SisViewEngine();
         }
-
-        protected Dictionary<string, object> ViewData { get; private set; }
-
+        
         //TODO: Refactor.
         public Principal User => this.Request.Session.ContainsParameter("principal")
             ? this.Request.Session.GetParameter("principal") as Principal
@@ -59,6 +55,7 @@
             string controllerName = this.GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
+            
             string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
             viewContent = this.viewEngine.GetHtml(viewContent, model);
 

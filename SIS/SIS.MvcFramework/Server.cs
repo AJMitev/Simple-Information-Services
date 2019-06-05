@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using HTTP.Common;
     using Routing;
+    using Sessions;
+    using SIS.Common;
 
     public class Server
     {
@@ -17,21 +19,25 @@
 
         private readonly IServerRoutingTable serverRoutingTable;
 
+        private readonly IHttpSessionStorage sessionStorage;
+
         private bool isRunning;
 
-        public Server(int port, IServerRoutingTable serverRoutingTable)
+        public Server(int port, IServerRoutingTable serverRoutingTable, IHttpSessionStorage sessionStorage)
         {
-            CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
+            serverRoutingTable.ThrowIfNull(nameof(serverRoutingTable));
+            sessionStorage.ThrowIfNull(nameof(sessionStorage));
 
             this.port = port;
             this.serverRoutingTable = serverRoutingTable;
+            this.sessionStorage = sessionStorage;
 
             this.tcpListener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), port);
         }
 
         private async Task ListenAsync(Socket client)
         {
-            var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable);
+            var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable, this.sessionStorage);
             await connectionHandler.ProcessRequestAsync();
         }
 

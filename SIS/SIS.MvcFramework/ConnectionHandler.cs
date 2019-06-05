@@ -16,6 +16,7 @@
     using Result;
     using Routing;
     using Sessions;
+    using SIS.Common;
 
     public class ConnectionHandler
     {
@@ -23,13 +24,17 @@
 
         private readonly IServerRoutingTable serverRoutingTable;
 
-        public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable)
+        private readonly IHttpSessionStorage sessionStorage;
+
+        public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable, IHttpSessionStorage sessionStorage)
         {
-            CoreValidator.ThrowIfNull(client, nameof(client));
-            CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
+            client.ThrowIfNull(nameof(client));
+            serverRoutingTable.ThrowIfNull(nameof(serverRoutingTable));
+            sessionStorage.ThrowIfNull(nameof(sessionStorage));
 
             this.client = client;
             this.serverRoutingTable = serverRoutingTable;
+            this.sessionStorage = sessionStorage;
         }
 
         private async Task<IHttpRequest> ReadRequestAsync()
@@ -105,9 +110,9 @@
 
                 string sessionId = cookie.Value;
 
-                if (HttpSessionStorage.ContainsSession(sessionId))
+                if (this.sessionStorage.ContainsSession(sessionId))
                 {
-                    httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                    httpRequest.Session = this.sessionStorage.GetSession(sessionId);
                 }
             }
 
@@ -115,7 +120,7 @@
             {
                 string sessionId = Guid.NewGuid().ToString();
 
-                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                httpRequest.Session = this.sessionStorage.GetSession(sessionId);
             }
 
             return httpRequest.Session?.Id;
@@ -123,7 +128,7 @@
 
         private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
         {
-            IHttpSession responseSession = HttpSessionStorage.GetSession(sessionId);
+            IHttpSession responseSession = this.sessionStorage.GetSession(sessionId);
 
             if (responseSession.IsNew)
             {

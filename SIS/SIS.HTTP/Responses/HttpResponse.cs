@@ -7,6 +7,7 @@
     using Enums;
     using Extensions;
     using Headers;
+    using SIS.Common;
 
     public class HttpResponse : IHttpResponse
     {
@@ -19,7 +20,7 @@
 
         public HttpResponse(HttpResponseStatusCode statusCode) : this()
         {
-            CoreValidator.ThrowIfNull(statusCode, nameof(statusCode));
+            statusCode.ThrowIfNull(nameof(statusCode));
             this.StatusCode = statusCode;
         }
 

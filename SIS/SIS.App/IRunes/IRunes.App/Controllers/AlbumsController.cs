@@ -8,7 +8,9 @@
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes.Http;
     using SIS.MvcFramework.Attributes.Security;
+    using SIS.MvcFramework.Mapping;
     using SIS.MvcFramework.Result;
+    using ViewModels;
 
     public class AlbumsController : Controller
     {
@@ -25,18 +27,13 @@
         {
             var allAlbums = this.albumService.GetAll();
 
-            if (allAlbums.Count == 0)
+            if (allAlbums.Count != 0)
             {
-                this.ViewData["Albums"] = "There are currently no albums.";
-            }
-            else
-            {
-                this.ViewData["Albums"] =
-                    string.Join(string.Empty,
-                    allAlbums.Select(album => album.ToHtmlAll()).ToList());
+                return this.View(allAlbums.Select(ModelMapper.ProjectTo<AlbumAllViewModel>).ToList());
             }
 
-            return this.View();
+
+            return this.View(new List<AlbumAllViewModel>());
         }
 
         [Authorize]
@@ -70,15 +67,17 @@
         {
             string albumId = this.Request.QueryData["id"].ToString();
 
-            var albumFromDb = this.albumService.GetById(albumId);
+            Album albumFromDb = this.albumService.GetById(albumId);
+            var albumViewModel = ModelMapper.ProjectTo<AlbumDetailsViewModel>(albumFromDb);
+
 
             if (albumFromDb == null)
             {
                 return this.Redirect("/Albums/All");
             }
 
-            this.ViewData["Album"] = albumFromDb.ToHtmlDetails();
-            return this.View();
+            
+            return this.View(albumViewModel );
 
         }
     }

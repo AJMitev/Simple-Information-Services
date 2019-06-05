@@ -3,6 +3,7 @@
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes.Http;
     using SIS.MvcFramework.Result;
+    using ViewModels;
 
     public class HomeController : Controller
     {
@@ -16,9 +17,9 @@
         {
             if (this.IsLoggedIn())
             {
-                this.ViewData["Username"] = this.User.Username;
+                var model = new UserHomeViewModel { Username = this.User.Username };
 
-                return this.View("Home");
+                return this.View(model, "Home");
             }
 
             return this.View();

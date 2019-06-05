@@ -27,7 +27,7 @@
         {
             string albumId = this.Request.QueryData["albumId"].ToString();
 
-            this.ViewData["AlbumId"] = albumId;
+            //this.ViewData["AlbumId"] = albumId;
             return this.View();
         }
 
@@ -70,8 +70,8 @@
                 return this.Redirect($"/Albums/Details?id={albumId}");
             }
 
-            this.ViewData["AlbumId"] = albumId;
-            this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
+            //this.ViewData["AlbumId"] = albumId;
+            //this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
 
             return this.View();
         }

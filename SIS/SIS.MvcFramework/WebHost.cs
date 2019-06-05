@@ -10,16 +10,19 @@
     using HTTP.Responses;
     using Result;
     using Routing;
+    using Sessions;
 
     public static class WebHost
     {
         public static void Start(IMvcApplication application)
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
+            IHttpSessionStorage sessionStorage = new HttpSessionStorage();
+
             AutoRegisterRoutes(application, serverRoutingTable);
             application.ConfigureServices();
             application.Configure(serverRoutingTable);
-            var server = new Server(8000, serverRoutingTable);
+            var server = new Server(8000, serverRoutingTable, sessionStorage);
             server.Run();
         }
 
