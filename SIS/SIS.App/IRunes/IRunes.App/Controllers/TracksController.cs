@@ -2,12 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Extensions;
     using Models;
     using Services;
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes.Http;
     using SIS.MvcFramework.Attributes.Security;
+    using SIS.MvcFramework.Mapping;
     using SIS.MvcFramework.Result;
     using ViewModels;
 
@@ -27,8 +27,12 @@
         {
             string albumId = this.Request.QueryData["albumId"].ToString();
 
-            //this.ViewData["AlbumId"] = albumId;
-            return this.View();
+            var model = new TrackCreateViewModel
+            {
+                AlbumId =  albumId
+            };
+            
+            return this.View(model);
         }
 
         [Authorize]
@@ -70,10 +74,9 @@
                 return this.Redirect($"/Albums/Details?id={albumId}");
             }
 
-            //this.ViewData["AlbumId"] = albumId;
-            //this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
+            var model = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
 
-            return this.View();
+            return this.View(model);
         }
     }
 }

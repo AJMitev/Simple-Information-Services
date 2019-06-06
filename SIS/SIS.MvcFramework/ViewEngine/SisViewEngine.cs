@@ -7,12 +7,13 @@
     using System.Reflection;
     using System.Text;
     using System.Text.RegularExpressions;
+    using Identity;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
     public class SisViewEngine : IViewEngine
     {
-        public string GetHtml<T>(string viewContent, T model)
+        public string GetHtml<T>(string viewContent, T model, Principal user = null)
         {
             string csharpHtmlCode = GetCSharpCode(viewContent);
             string code = $@"
@@ -21,13 +22,15 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using SIS.MvcFramework.ViewEngine;
+using SIS.MvcFramework.Identity;
 namespace AppViewCodeNamespace
 {{
     public class AppViewCode : IView
     {{
-       public string GetHtml(object model)
+       public string GetHtml(object model, Principal user = null)
         {{
             var Model = {(model == null ? "new {}" : "model as " + GetModelType(model))};
+            var User = user;
             var html = new StringBuilder();
 
             {csharpHtmlCode}
@@ -37,7 +40,7 @@ namespace AppViewCodeNamespace
     }}
 }}";
             IView view = CompileAndInstance(code, model?.GetType().Assembly);
-            string htmlResult = view?.GetHtml(model);
+            string htmlResult = view?.GetHtml(model, user);
 
             return htmlResult;
         }
