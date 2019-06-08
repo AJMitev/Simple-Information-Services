@@ -1,6 +1,7 @@
 ﻿namespace SIS.MvcFramework
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Attributes.Action;
@@ -8,6 +9,7 @@
     using Attributes.Security;
     using DependencyContainer;
     using HTTP.Enums;
+    using HTTP.Requests;
     using HTTP.Responses;
     using Logging;
     using Result;
@@ -22,11 +24,11 @@
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
             IHttpSessionStorage sessionStorage = new HttpSessionStorage();
             IServiceProvider serviceProvider = new ServiceProvider();
-            
-            serviceProvider.Add<ILogger,ConsoleLogger>();
+
+            serviceProvider.Add<ILogger, ConsoleLogger>();
             application.ConfigureServices(serviceProvider);
 
-            AutoRegisterRoutes(application, serverRoutingTable,serviceProvider);
+            AutoRegisterRoutes(application, serverRoutingTable, serviceProvider);
             application.Configure(serverRoutingTable);
             var server = new Server(8000, serverRoutingTable, sessionStorage);
             server.Run();
@@ -73,30 +75,60 @@
                         path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
                     }
 
-                    serverRoutingTable.Add(httpMethod, path, request =>
-                    {
-                        var controllerInstance = serviceProvider.CreateInstance(controllerType);
-                        ((Controller)controllerInstance).Request = request;
-
-                        // Authorization - TODO: Refactor this.
-                        var controllerPrinciple = ((Controller)controllerInstance).User;
-                        var authorizeAttribute = action.GetCustomAttributes()
-                            .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
-                        if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrinciple))
-                        {
-                            //TODO: Redirect to configured URL
-                            return new HttpResponse(HttpResponseStatusCode.Forbidden);
-                        }
-
-                        var response = action.Invoke(controllerInstance, new object[0]) as ActionResult;
-                        return response;
-                    });
+                    serverRoutingTable.Add(httpMethod, path,
+                        (request) => ProcessRequest(serviceProvider, controllerType, request, action));
 
                     Console.WriteLine(httpMethod + " " + path);
                 }
             }
 
             var sb = DateTime.UtcNow;
+        }
+
+        private static IHttpResponse ProcessRequest(IServiceProvider serviceProvider, Type controllerType, IHttpRequest request, MethodInfo action)
+        {
+            var controllerInstance = serviceProvider.CreateInstance(controllerType);
+            ((Controller)controllerInstance).Request = request;
+
+            // Authorization - TODO: Refactor this.
+            var controllerPrinciple = ((Controller)controllerInstance).User;
+            var authorizeAttribute = action.GetCustomAttributes()
+                .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
+            if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrinciple))
+            {
+                //TODO: Redirect to configured URL
+                return new HttpResponse(HttpResponseStatusCode.Forbidden);
+            }
+
+            var parameters = action.GetParameters();
+            var parameterValues = new List<object>();
+
+            foreach (var parameter in parameters)
+            {
+                var parameterType = parameter.ParameterType;
+                var parameterName = parameter.Name.ToLower();
+                ISet<string> httpDataValue = null;
+
+                if (request.QueryData.Any(x => x.Key.ToLower().Equals(parameterName)))
+                {
+                    httpDataValue = request.QueryData
+                        .FirstOrDefault(x => x.Key.ToLower().Equals(parameterName)).Value;
+                }
+                else if (request.FormData.Any(x => x.Key.ToLower().Equals(parameterName)))
+                {
+                    httpDataValue = request.FormData
+                        .FirstOrDefault(x => x.Key.ToLower().Equals(parameterName)).Value;
+                }
+
+                //TODO: Support lists.
+                string httpStringValue = httpDataValue?.FirstOrDefault();
+
+                var parameterValue = Convert.ChangeType(httpStringValue, parameterType);
+                parameterValues.Add(parameterValue);
+            }
+
+            var response = action.Invoke(controllerInstance, parameterValues.ToArray()) as ActionResult;
+            return response;
         }
     }
 }

@@ -4,7 +4,6 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
-    using HTTP.Common;
     using Routing;
     using Sessions;
     using SIS.Common;
@@ -12,15 +11,10 @@
     public class Server
     {
         private const string LocalHostIpAddress = "127.0.0.1";
-
         private readonly int port;
-
         private readonly TcpListener tcpListener;
-
         private readonly IServerRoutingTable serverRoutingTable;
-
         private readonly IHttpSessionStorage sessionStorage;
-
         private bool isRunning;
 
         public Server(int port, IServerRoutingTable serverRoutingTable, IHttpSessionStorage sessionStorage)
