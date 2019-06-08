@@ -16,9 +16,9 @@
 
         private readonly IAlbumService albumService;
 
-        public AlbumsController()
+        public AlbumsController(IAlbumService albumService)
         {
-            this.albumService = new AlbumService();
+            this.albumService = albumService;
         }
 
         [Authorize]

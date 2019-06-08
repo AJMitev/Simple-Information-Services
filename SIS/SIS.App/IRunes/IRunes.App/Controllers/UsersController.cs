@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
-    using IRunes.Data;
     using IRunes.Models;
     using Services;
     using SIS.MvcFramework;
@@ -16,9 +15,9 @@
     {
         private readonly IUserService userService;
 
-        public UsersController()
+        public UsersController(IUserService userService)
         {
-            this.userService = new UserService();
+            this.userService = userService;
         }
 
         public ActionResult Login()

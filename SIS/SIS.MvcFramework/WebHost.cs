@@ -6,11 +6,14 @@
     using Attributes.Action;
     using Attributes.Http;
     using Attributes.Security;
+    using DependencyContainer;
     using HTTP.Enums;
     using HTTP.Responses;
+    using Logging;
     using Result;
     using Routing;
     using Sessions;
+    using IServiceProvider = DependencyContainer.IServiceProvider;
 
     public static class WebHost
     {
@@ -18,37 +21,40 @@
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
             IHttpSessionStorage sessionStorage = new HttpSessionStorage();
+            IServiceProvider serviceProvider = new ServiceProvider();
+            
+            serviceProvider.Add<ILogger,ConsoleLogger>();
+            application.ConfigureServices(serviceProvider);
 
-            AutoRegisterRoutes(application, serverRoutingTable);
-            application.ConfigureServices();
+            AutoRegisterRoutes(application, serverRoutingTable,serviceProvider);
             application.Configure(serverRoutingTable);
             var server = new Server(8000, serverRoutingTable, sessionStorage);
             server.Run();
         }
 
         private static void AutoRegisterRoutes(
-            IMvcApplication application, IServerRoutingTable serverRoutingTable)
+            IMvcApplication application, IServerRoutingTable serverRoutingTable, IServiceProvider serviceProvider)
         {
             var controllers = application.GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract
                     && typeof(Controller).IsAssignableFrom(type));
 
 
-            foreach (var controller in controllers)
+            foreach (var controllerType in controllers)
             {
-                var actions = controller
+                var actions = controllerType
                     .GetMethods(BindingFlags.DeclaredOnly
                         | BindingFlags.Public
                         | BindingFlags.Instance)
                     .Where(x => !x.IsSpecialName
-                                && x.DeclaringType == controller
+                                && x.DeclaringType == controllerType
                                 && !x.IsVirtual
                                 && x.GetCustomAttributes()
                                     .All(a => a.GetType() != typeof(NonActionAttribute)));
 
                 foreach (var action in actions)
                 {
-                    var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{action.Name}";
+                    var path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{action.Name}";
                     var attribute = action.GetCustomAttributes()
                         .LastOrDefault(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute))) as BaseHttpAttribute;
                     var httpMethod = HttpRequestMethod.Get;
@@ -64,12 +70,12 @@
 
                     if (attribute?.ActionName != null)
                     {
-                        path = $"/{controller.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
+                        path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
                     }
 
                     serverRoutingTable.Add(httpMethod, path, request =>
                     {
-                        var controllerInstance = Activator.CreateInstance(controller);
+                        var controllerInstance = serviceProvider.CreateInstance(controllerType);
                         ((Controller)controllerInstance).Request = request;
 
                         // Authorization - TODO: Refactor this.
