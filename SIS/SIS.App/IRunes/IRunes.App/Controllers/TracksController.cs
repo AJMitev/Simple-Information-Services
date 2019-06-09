@@ -33,8 +33,8 @@
         }
 
         [Authorize]
-        [HttpPost(ActionName = "Create")]
-        public ActionResult CreateConfirm(string albumId, string name, string link, decimal price)
+        [HttpPost]
+        public ActionResult Create(string albumId, string name, string link, decimal price)
         {
             Track trackForDb = new Track
             {

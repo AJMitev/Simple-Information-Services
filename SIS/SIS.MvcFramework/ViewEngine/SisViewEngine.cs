@@ -4,6 +4,7 @@
     using System.Collections;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Reflection;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -65,7 +66,7 @@ namespace AppViewCodeNamespace
                 .AddReferences(MetadataReference.CreateFromFile(typeof(Object).Assembly.Location))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location))
                 .AddReferences(MetadataReference.CreateFromFile(Assembly.GetEntryAssembly()?.Location))
-                .AddReferences(MetadataReference.CreateFromFile(modelAssembly.Location));
+                .AddReferences(MetadataReference.CreateFromFile(modelAssembly?.Location));
 
             var netStandardAssembly = Assembly.Load(new AssemblyName("netstandard")).GetReferencedAssemblies();
             foreach (AssemblyName assemblyName in netStandardAssembly)
@@ -82,13 +83,18 @@ namespace AppViewCodeNamespace
 
                 if (!compilationResult.Success)
                 {
-                    foreach (var error in compilationResult.Diagnostics) //TODO: .Where(x=>x.Severity == DiagnosticSeverity.Error)
+                    var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
+                    var errorsHtml = new StringBuilder();
+                    errorsHtml.AppendLine($"<h1>{errors.Count()} errors:</h1>");
+
+                    foreach (var error in errors)
                     {
                         Console.WriteLine(error.GetMessage());
+                        errorsHtml.AppendLine($"<div>{error.Location} => {error.GetMessage()}</div>");
                     }
 
-
-                    return null;
+                    errorsHtml.AppendLine($"<pre>{WebUtility.HtmlEncode(code)}</pre>");
+                    return new ErrorView(errorsHtml.ToString());
                 }
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
@@ -108,8 +114,7 @@ namespace AppViewCodeNamespace
                     Console.WriteLine("AppViewCode cannot be instantiated.");
                     return null;
                 }
-
-
+                
                 return instance as IView;
             }
         }

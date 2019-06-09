@@ -23,8 +23,8 @@
             return this.View();
         }
 
-        [HttpPost(ActionName = "Login")]
-        public ActionResult LoginConfirm(string username, string password)
+        [HttpPost]
+        public ActionResult Login(string username, string password)
         {
             User userFromDb = this.userService.GetUserByUsernameAndPassword(username, this.HashPassword(password));
 
@@ -43,8 +43,8 @@
             return this.View();
         }
 
-        [HttpPost(ActionName = "Register")]
-        public ActionResult RegisterConfirm(string username, string password, string confirmPassword, string email)
+        [HttpPost]
+        public ActionResult Register(string username, string password, string confirmPassword, string email)
         {
             if (password != confirmPassword)
             {
