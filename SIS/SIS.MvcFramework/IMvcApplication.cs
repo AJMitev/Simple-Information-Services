@@ -7,6 +7,6 @@ namespace SIS.MvcFramework
     {
         void Configure(IServerRoutingTable serverRoutingTable);
 
-        void ConfigureServices(IServiceProvider serviceProvider); // DI
+        void ConfigureServices(IServiceProvider serviceProvider);
     }
 }
