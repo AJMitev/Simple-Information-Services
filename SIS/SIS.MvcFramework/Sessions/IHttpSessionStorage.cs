@@ -1,10 +1,11 @@
-﻿namespace SIS.MvcFramework.Sessions
-{
-    using HTTP.Sessions;
+﻿using SIS.HTTP.Sessions;
 
+namespace SIS.MvcFramework.Sessions
+{
     public interface IHttpSessionStorage
     {
-        IHttpSession GetSession(string id);
-        bool ContainsSession(string id);
+        IHttpSession GetSession(string sessionId);
+
+        bool ContainsSession(string sessionId);
     }
 }

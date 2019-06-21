@@ -2,13 +2,13 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using Validation;
     using ViewEngine;
     using Xunit;
 
     public class TestViewEngine
     {
         [Theory]
-        
         [InlineData("UserForForeachAndIf")]
         [InlineData("UseModelData")]
         [InlineData("TestWithoutCsharpCode")]
@@ -32,9 +32,12 @@
                 }
             };
 
-            var actualResult = viewEngine.GetHtml<object>(viewContent, model);
+            var modelState = new ModelStateDictionary();
+            var principal = new Identity.Principal();
 
-            Assert.Equal(expectedContent.Trim(),actualResult.Trim());
+            var actualResult = viewEngine.GetHtml<object>(viewContent, model, modelState, principal);
+
+            Assert.Equal(expectedContent.Trim(), actualResult.Trim());
         }
     }
 }

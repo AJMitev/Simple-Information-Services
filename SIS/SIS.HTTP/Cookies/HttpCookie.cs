@@ -1,10 +1,9 @@
-﻿namespace SIS.HTTP.Cookies
-{
-    using System;
-    using System.Text;
-    using Common;
-    using SIS.Common;
+﻿using System;
+using System.Text;
+using SIS.Common;
 
+namespace SIS.HTTP.Cookies
+{
     public class HttpCookie
     {
         private const int HttpCookieDefaultExpirationDays = 3;
@@ -26,8 +25,7 @@
             this.Key = key;
             this.Value = value;
             this.Expires = DateTime.UtcNow.AddDays(expires);
-            this.Path = path;
-            this.IsNew = isNew;
+			this.Path = path;
         }
 
 

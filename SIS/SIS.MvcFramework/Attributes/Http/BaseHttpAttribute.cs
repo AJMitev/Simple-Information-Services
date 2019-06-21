@@ -1,8 +1,8 @@
-﻿namespace SIS.MvcFramework.Attributes.Http
-{
-    using System;
-    using HTTP.Enums;
+﻿using SIS.HTTP.Enums;
+using System;
 
+namespace SIS.MvcFramework.Attributes
+{
     public abstract class BaseHttpAttribute : Attribute
     {
         public string ActionName { get; set; }

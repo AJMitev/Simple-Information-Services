@@ -1,10 +1,10 @@
-﻿namespace SIS.HTTP.Responses
-{
-    using Cookies;
-    using Cookies.Contracts;
-    using Enums;
-    using Headers;
+﻿using SIS.HTTP.Cookies;
+using SIS.HTTP.Cookies.Contracts;
+using SIS.HTTP.Enums;
+using SIS.HTTP.Headers;
 
+namespace SIS.HTTP.Responses
+{
     public interface IHttpResponse
     {
         HttpResponseStatusCode StatusCode { get; set; }

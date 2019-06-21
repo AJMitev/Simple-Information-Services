@@ -1,18 +1,19 @@
-﻿namespace SIS.HTTP.Requests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using Common;
-    using Cookies;
-    using Cookies.Contracts;
-    using Enums;
-    using Exceptions;
-    using Headers;
-    using Sessions;
-    using SIS.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web;
+using SIS.Common;
+using SIS.HTTP.Common;
+using SIS.HTTP.Cookies;
+using SIS.HTTP.Cookies.Contracts;
+using SIS.HTTP.Enums;
+using SIS.HTTP.Exceptions;
+using SIS.HTTP.Headers;
+using SIS.HTTP.Sessions;
 
+namespace SIS.HTTP.Requests
+{
     public class HttpRequest : IHttpRequest
     {
         public HttpRequest(string requestString)
@@ -40,12 +41,18 @@
         public IHttpCookieCollection Cookies { get; }
 
         public HttpRequestMethod RequestMethod { get; private set; }
-
+        
         public IHttpSession Session { get; set; }
 
         private bool IsValidRequestLine(string[] requestLineParams)
         {
-            return requestLineParams.Length == 3 && requestLineParams[2] == GlobalConstants.HttpOneProtocolFragment;
+            if (requestLineParams.Length != 3
+                || requestLineParams[2] != GlobalConstants.HttpOneProtocolFragment)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private bool IsValidRequestQueryString(string queryString, string[] queryParameters)
@@ -73,7 +80,7 @@
 
         private void ParseRequestMethod(string[] requestLineParams)
         {
-            bool parseResult = Enum.TryParse(requestLineParams[0], true,
+            bool parseResult = HttpRequestMethod.TryParse(requestLineParams[0], true,
                 out HttpRequestMethod method);
 
             if (!parseResult)
@@ -88,7 +95,7 @@
 
         private void ParseRequestUrl(string[] requestLineParams)
         {
-            this.Url = requestLineParams[1];
+            this.Url = HttpUtility.UrlDecode(requestLineParams[1]);
         }
 
         private void ParseRequestPath()
@@ -109,9 +116,9 @@
             if (this.HasQueryString())
             {
                 var parameters = this.Url.Split('?', '#')[1]
-                     .Split('&')
-                     .Select(plainQueryParameter => plainQueryParameter.Split('='))
-                     .ToList();
+                    .Split('&')
+                    .Select(plainQueryParameter => plainQueryParameter.Split('='))
+                    .ToList();
 
                 foreach (var parameter in parameters)
                 {
@@ -146,7 +153,7 @@
                     }
 
                     this.FormData[key].Add(WebUtility.UrlDecode(value));
-                }
+                }                
             }
         }
 

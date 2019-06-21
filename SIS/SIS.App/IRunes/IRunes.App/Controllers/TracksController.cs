@@ -1,17 +1,18 @@
-﻿namespace IRunes.App.Controllers
-{
-    using Models;
-    using Services;
-    using SIS.MvcFramework;
-    using SIS.MvcFramework.Attributes.Http;
-    using SIS.MvcFramework.Attributes.Security;
-    using SIS.MvcFramework.Mapping;
-    using SIS.MvcFramework.Result;
-    using ViewModels;
+﻿using IRunes.App.ViewModels.Tracks;
+using IRunes.Models;
+using IRunes.Services;
+using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.Security;
+using SIS.MvcFramework.Mapping;
+using SIS.MvcFramework.Result;
 
+namespace IRunes.App.Controllers
+{
     public class TracksController : Controller
     {
         private readonly ITrackService trackService;
+
         private readonly IAlbumService albumService;
 
         public TracksController(ITrackService trackService, IAlbumService albumService)
@@ -21,50 +22,50 @@
         }
 
         [Authorize]
-        public ActionResult Create(string albumId)
+        public IActionResult Create(string albumId)
         {
-
-            var model = new TrackCreateViewModel
-            {
-                AlbumId = albumId
-            };
-
-            return this.View(model);
+            return this.View(new TrackCreateViewModel{ AlbumId = albumId });
         }
 
         [Authorize]
         [HttpPost]
-        public ActionResult Create(string albumId, string name, string link, decimal price)
+        public IActionResult Create(TrackCreateInputModel model)
         {
-            Track trackForDb = new Track
+            if (!this.ModelState.IsValid)
             {
-                Name = name,
-                Link = link,
-                Price = price
-            };
+                return this.Redirect("/");
+            }
 
-            bool isTrackAddedToAlbum = this.albumService.AddTrackToAlbum(albumId, trackForDb);
-            if (!isTrackAddedToAlbum)
+            Track trackForDb = ModelMapper.ProjectTo<Track>(model);
+
+            if (!this.albumService.AddTrackToAlbum(model.AlbumId, trackForDb))
             {
                 return this.Redirect("/Albums/All");
             }
 
-            return this.Redirect($"/Albums/Details?id={albumId}");
+            return this.Redirect($"/Albums/Details?id={model.AlbumId}");
         }
 
         [Authorize]
-        public ActionResult Details(string albumId, string trackId)
+        public IActionResult Details(TrackDetailsInputModel model)
         {
-            var trackFromDb = this.trackService.GetById(trackId);
+            if (!this.ModelState.IsValid)
+            {
+                return this.Redirect($"Albums/All");
+            }
+
+            Track trackFromDb = this.trackService.GetTrackById(model.TrackId);
 
             if (trackFromDb == null)
             {
-                return this.Redirect($"/Albums/Details?id={albumId}");
+                return this.Redirect($"/Albums/Details?id={model.AlbumId}");
             }
 
-            var model = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
+            TrackDetailsViewModel trackDetailsViewModel = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
 
-            return this.View(model);
+            trackDetailsViewModel.AlbumId = model.AlbumId;
+
+            return this.View(trackDetailsViewModel);
         }
     }
 }

@@ -1,27 +1,25 @@
-﻿namespace IRunes.App.Controllers
-{
-    using SIS.MvcFramework;
-    using SIS.MvcFramework.Attributes.Http;
-    using SIS.MvcFramework.Result;
-    using ViewModels;
+﻿using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Result;
+using System.Collections.Generic;
 
+namespace IRunes.App.Controllers
+{
     public class HomeController : Controller
     {
         [HttpGet(Url = "/")]
-        public ActionResult IndexSlash()
+        public IActionResult IndexSlash()
         {
-            return Index();
+            return this.Index();
         }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            if (this.IsLoggedIn())
-            {
-                var model = new UserHomeViewModel { Username = this.User.Username };
+            return this.View();
+        }
 
-                return this.View(model, "Home");
-            }
-
+        public IActionResult Test(IEnumerable<string> list)
+        {
             return this.View();
         }
     }

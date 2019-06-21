@@ -1,8 +1,8 @@
-﻿namespace SIS.MvcFramework.Logging
-{
-    using System;
-    using System.Threading;
+﻿using System;
+using System.Threading;
 
+namespace SIS.MvcFramework.Logging
+{
     public class ConsoleLogger : ILogger
     {
         public void Log(string message)

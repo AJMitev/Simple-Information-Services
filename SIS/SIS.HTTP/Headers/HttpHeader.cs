@@ -1,13 +1,12 @@
-﻿namespace SIS.HTTP.Headers
-{
-    using SIS.Common;
+﻿using SIS.Common;
+using SIS.HTTP.Common;
 
+namespace SIS.HTTP.Headers
+{
     public class HttpHeader
     {
         public const string Cookie = "Cookie";
-        
-        public const string Location = "Location";
-        
+
         public const string ContentType = "Content-Type";
 
         public const string ContentLength = "Content-Length";
@@ -17,8 +16,7 @@
         public HttpHeader(string key, string value)
         {
             key.ThrowIfNullOrEmpty(nameof(key));
-            value.ThrowIfNullOrEmpty( nameof(value));
-
+            value.ThrowIfNullOrEmpty(nameof(value));
             this.Key = key;
             this.Value = value;
         }

@@ -1,6 +1,11 @@
-﻿namespace SIS.MvcFramework.ViewEngine
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using SIS.MvcFramework.Identity;
+
+namespace SIS.MvcFramework.ViewEngine
 {
-    using Identity;
+    using Validation;
 
     public class ErrorView : IView
     {
@@ -11,9 +16,9 @@
             this.errors = errors;
         }
 
-        public string GetHtml(object model, Principal user)
+        public string GetHtml(object model, ModelStateDictionary modelState, Principal user)
         {
-            return this.errors;
+            return errors;
         }
     }
 }

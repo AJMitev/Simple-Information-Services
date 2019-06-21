@@ -1,18 +1,18 @@
-﻿namespace SIS.MvcFramework.Attributes.Security
-{
-    using System;
-    using Identity;
+﻿using System;
+using SIS.MvcFramework.Identity;
 
+namespace SIS.MvcFramework.Attributes.Security
+{
     public class AuthorizeAttribute : Attribute
     {
-        private readonly string authrority;
-
-        public AuthorizeAttribute(string authority = Principal.Authorized)
+        public AuthorizeAttribute(string authority = "authorized")
         {
-            this.authrority = authority;
+            this.authority = authority;
         }
 
-        public bool IsLoggedIn(Principal principal)
+        private readonly string authority;
+
+        private bool IsLoggedIn(Principal principal)
         {
             return principal != null;
         }
@@ -21,11 +21,11 @@
         {
             if (!this.IsLoggedIn(principal))
             {
-                return this.authrority == Principal.Anonymous;
+                return this.authority == "anonymous";
             }
-
-            return this.authrority == Principal.Authorized
-                   || principal.Roles.Contains(this.authrority.ToLower());
+           
+            return this.authority == "authorized" 
+                   || principal.Roles.Contains(this.authority.ToLower());
         }
     }
 }

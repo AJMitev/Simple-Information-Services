@@ -1,15 +1,15 @@
-﻿namespace SIS.HTTP.Cookies
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Text;
-    using SIS.HTTP.Common;
-    using SIS.HTTP.Cookies.Contracts;
-    using SIS.Common;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using SIS.Common;
+using SIS.HTTP.Common;
+using SIS.HTTP.Cookies.Contracts;
 
+namespace SIS.HTTP.Cookies
+{
     public class HttpCookieCollection : IHttpCookieCollection
     {
-        private readonly Dictionary<string, HttpCookie> httpCookies;
+        private Dictionary<string, HttpCookie> httpCookies;
 
         public HttpCookieCollection()
         {

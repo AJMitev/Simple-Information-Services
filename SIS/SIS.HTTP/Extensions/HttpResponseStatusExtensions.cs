@@ -1,7 +1,7 @@
-﻿namespace SIS.HTTP.Extensions
-{
-    using Enums;
+﻿using SIS.HTTP.Enums;
 
+namespace SIS.HTTP.Extensions
+{
     public static class HttpResponseStatusExtensions
     {
         public static string GetStatusLine(this HttpResponseStatusCode statusCode)

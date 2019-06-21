@@ -1,14 +1,14 @@
-﻿namespace SIS.HTTP.Responses
-{
-    using System.Text;
-    using Common;
-    using Cookies;
-    using Cookies.Contracts;
-    using Enums;
-    using Extensions;
-    using Headers;
-    using SIS.Common;
+﻿using System.Text;
+using SIS.Common;
+using SIS.HTTP.Common;
+using SIS.HTTP.Cookies;
+using SIS.HTTP.Cookies.Contracts;
+using SIS.HTTP.Enums;
+using SIS.HTTP.Extensions;
+using SIS.HTTP.Headers;
 
+namespace SIS.HTTP.Responses
+{
     public class HttpResponse : IHttpResponse
     {
         public HttpResponse()
@@ -26,7 +26,6 @@
 
         public HttpResponseStatusCode StatusCode { get; set; }
 
-        
         public IHttpHeaderCollection Headers { get; }
 
         public IHttpCookieCollection Cookies { get; }

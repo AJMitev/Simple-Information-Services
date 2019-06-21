@@ -1,26 +1,33 @@
-﻿namespace SIS.MvcFramework
+﻿using System.Runtime.CompilerServices;
+using SIS.HTTP.Requests;
+using SIS.MvcFramework.Extensions;
+using SIS.MvcFramework.Identity;
+using SIS.MvcFramework.ViewEngine;
+
+namespace SIS.MvcFramework
 {
-    using System.Runtime.CompilerServices;
-    using Extensions;
-    using HTTP.Requests;
-    using Identity;
-    using Result;
-    using ViewEngine;
+    using Results;
+    using Validation;
 
     public abstract class Controller
     {
         private readonly IViewEngine viewEngine;
+
         protected Controller()
         {
-            viewEngine = new SisViewEngine();
+            this.viewEngine = new SisViewEngine();
+            this.ModelState = new ModelStateDictionary();
         }
-        
-        //TODO: Refactor.
-        public Principal User => this.Request.Session.ContainsParameter("principal")
-            ? this.Request.Session.GetParameter("principal") as Principal
+
+        // TODO: Refactor this
+        public Principal User => 
+            this.Request.Session.ContainsParameter("principal")
+            ? (Principal) this.Request.Session.GetParameter("principal")
             : null;
 
         public IHttpRequest Request { get; set; }
+
+        public ModelStateDictionary ModelState { get; set; }
 
         protected bool IsLoggedIn()
         {
@@ -29,14 +36,12 @@
 
         protected void SignIn(string id, string username, string email)
         {
-            var principal = new Principal
+            this.Request.Session.AddParameter("principal", new Principal
             {
                 Id = id,
                 Username = username,
                 Email = email
-            };
-
-            this.Request.Session.AddParameter("principal", principal);
+            });
         }
 
         protected void SignOut()
@@ -44,28 +49,26 @@
             this.Request.Session.ClearParameters();
         }
 
-        protected ActionResult View([CallerMemberName]string view = null)
+        protected ActionResult View([CallerMemberName] string view = null)
         {
-            return this.View<object>(null,view);
+            return this.View<object>(null, view);
         }
 
         protected ActionResult View<T>(T model = null, [CallerMemberName] string view = null)
             where T : class
         {
+            // TODO: Support for layout
             string controllerName = this.GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
-            
             string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
-            viewContent = this.viewEngine.GetHtml(viewContent, model, this.User);
+            viewContent = this.viewEngine.GetHtml(viewContent, model,this.ModelState, this.User);
 
             string layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
-            layoutContent = this.viewEngine.GetHtml(layoutContent, model, this.User);
+            layoutContent = this.viewEngine.GetHtml(layoutContent, model,this.ModelState, this.User);
             layoutContent = layoutContent.Replace("@RenderBody()", viewContent);
 
-
             var htmlResult = new HtmlResult(layoutContent);
-
             return htmlResult;
         }
 
@@ -74,20 +77,24 @@
             return new RedirectResult(url);
         }
 
-        protected ActionResult Xml(object content)
+        protected ActionResult Xml(object obj)
         {
-
-            return new XmlResult(content.ToXml());
+            return new XmlResult(obj.ToXml());
         }
 
-        protected ActionResult Json(object content)
+        protected ActionResult Json(object obj)
         {
-            return new JsonResult(content.ToJson());
+            return new JsonResult(obj.ToJson());
         }
 
-        protected ActionResult File(byte[] content)
+        protected ActionResult File(byte[] fileContent)
         {
-            return new FileResult(content);
+            return new FileResult(fileContent);
+        }
+
+        protected ActionResult NotFound(string message = "")
+        {
+            return new NotFoundResult(message);
         }
     }
 }
